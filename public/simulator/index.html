@@ -12,6 +12,18 @@
             <button id="btn-play" class="btn">Play</button>
             <button id="btn-pause" class="btn">Pause</button>
             <span id="status-indicator">Paused</span>
+            <div id="speed-controls" style="display: inline-block; margin-left: 15px;">
+                <button class="btn speed-btn active" data-speed="1">1x</button>
+                <button class="btn speed-btn" data-speed="2">2x</button>
+                <button class="btn speed-btn" data-speed="5">5x</button>
+            </div>
+        </div>
+        <div id="toolbar">
+            <button id="btn-tool-none" class="btn tool-btn active" data-tool="none">Cursor</button>
+            <button id="btn-tool-road" class="btn tool-btn" data-tool="road">Road</button>
+            <button id="btn-tool-traffic" class="btn tool-btn" data-tool="traffic_light">Traffic Light</button>
+            <button id="btn-tool-vehicle" class="btn tool-btn" data-tool="vehicle">Vehicle</button>
+            <button id="btn-tool-eraser" class="btn tool-btn" data-tool="eraser">Eraser</button>
         </div>
         <div id="dashboard">
             <p>Active Vehicles: <span id="stat-vehicles">0</span></p>

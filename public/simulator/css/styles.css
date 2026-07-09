@@ -45,27 +45,46 @@ canvas {
     padding: 10px;
     z-index: 10;
     display: flex;
+    flex-wrap: wrap; /* Untuk responsivitas mobile */
+    gap: 10px;
     justify-content: space-between;
     pointer-events: none; /* Let clicks pass through to canvas if not on UI elements */
 }
 
-#controls, #dashboard {
-    background-color: rgba(0, 0, 0, 0.7);
-    padding: 10px;
+#controls, #dashboard, #toolbar {
+    background-color: rgba(0, 0, 0, 0.75);
+    padding: 10px 15px;
     border: 2px solid var(--grid-color);
-    border-radius: 5px;
+    border-radius: 8px;
     pointer-events: auto; /* Re-enable pointer events for UI */
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+#toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+
+.tool-btn.active {
+    background-color: var(--accent-color);
+    color: #000;
+    border-color: #fff;
 }
 
 .btn {
     background-color: var(--btn-bg);
     color: var(--text-color);
     border: 1px solid var(--grid-color);
-    padding: 5px 15px;
+    padding: 6px 12px;
+    border-radius: 4px;
     cursor: pointer;
     font-family: inherit;
     font-weight: bold;
-    margin-right: 5px;
+    transition: background-color 0.2s;
 }
 
 .btn:hover {
@@ -76,8 +95,24 @@ canvas {
     margin-left: 10px;
     color: #ff5555; /* Default paused color */
     font-weight: bold;
+    min-width: 60px;
 }
 
 #status-indicator.running {
     color: #55ff55;
+}
+
+#dashboard p {
+    margin: 0 10px;
+    font-size: 0.9em;
+}
+
+@media (max-width: 768px) {
+    #ui-overlay {
+        justify-content: center;
+    }
+    #controls, #dashboard, #toolbar {
+        width: 100%;
+        justify-content: center;
+    }
 }

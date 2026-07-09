@@ -14,26 +14,26 @@ Berikut adalah rencana eksekusi dan checklist tugas teknis pengembangan (Task Li
 - [x] **Validasi Edge-Cases**: Buktikan apa yang terjadi jika game loop dipause di tengah update state, dan jika user meresize browser window.
 
 ## Fase 2: Sandbox & Map Editor
-- [ ] Membuat antarmuka UI Toolbar sederhana (mode gambar, mode hapus).
-- [ ] Fitur *Road Builder*: Fungsi menambahkan tile jalan ke atas grid (dan memperbarui `StateManager`).
-- [ ] Fitur *Traffic Light Editor*: Fungsi menambahkan lampu ke grid persimpangan, serta timer siklus warnanya.
-- [ ] Fitur *Vehicle Spawner*: Fungsi meng-instantiate object mobil pada tile jalan tertentu.
-- [ ] **Validasi Edge-Cases**: Buktikan apa yang terjadi jika user mencoba meletakkan mobil di luar jalan atau di atas mobil lain (input invalid).
+- [x] Membuat antarmuka UI Toolbar sederhana (mode gambar, mode hapus).
+- [x] Fitur *Road Builder*: Fungsi menambahkan tile jalan ke atas grid (dan memperbarui `StateManager`).
+- [x] Fitur *Traffic Light Editor*: Fungsi menambahkan lampu ke grid persimpangan, serta timer siklus warnanya.
+- [x] Fitur *Vehicle Spawner*: Fungsi meng-instantiate object mobil pada tile jalan tertentu.
+- [x] **Validasi Edge-Cases**: Buktikan apa yang terjadi jika user mencoba meletakkan mobil di luar jalan atau di atas mobil lain (input invalid).
 
 ## Fase 3: Advanced Vehicle AI
-- [ ] Implementasi pergerakan dasar kendaraan (jalan lurus mengikuti tile jalan).
-- [ ] Sistem *Smart Pathfinding* (Kendaraan mengenali rute jalan dan bisa berbelok di persimpangan).
-- [ ] *Collision Avoidance*: Deteksi tabrakan depan, otomatis melakukan pengereman dan menjaga jarak.
-- [ ] Interaksi dengan *Traffic Light*: Kendaraan berhenti otomatis saat lampu merah dan jalan saat hijau.
-- [ ] (Opsional/Medium) *Lane Management*: Sistem berpindah jalur jika ada dua jalur.
-- [ ] **Validasi Edge-Cases**: Buktikan penanganan _race condition_ atau tabrakan saat dua mobil memasuki persimpangan sekaligus dari arah berbeda.
+- [x] Implementasi pergerakan dasar kendaraan (jalan lurus mengikuti tile jalan).
+- [x] Sistem *Smart Pathfinding* (Kendaraan mengenali rute jalan dan bisa berbelok di persimpangan).
+- [x] *Collision Avoidance*: Deteksi tabrakan depan, otomatis melakukan pengereman dan menjaga jarak.
+- [x] Interaksi dengan *Traffic Light*: Kendaraan berhenti otomatis saat lampu merah dan jalan saat hijau.
+- [x] (Opsional/Medium) *Lane Management*: (Dilewati untuk versi MVP demi menjaga stabilitas grid 1-lajur).
+- [x] **Validasi Edge-Cases**: Buktikan penanganan _race condition_ atau tabrakan saat dua mobil memasuki persimpangan sekaligus dari arah berbeda.
 
 ## Fase 4: UI/UX & Analytics Dashboard
-- [ ] Panel kontrol bawah untuk mengatur kecepatan simulasi (1x, 2x, 5x).
-- [ ] Panel informasi (Dashboard sederhana) menampilkan "Jumlah Mobil Aktif" dan FPS (kinerja canvas).
-- [ ] Fitur observasi *Heatmap* atau sekadar detektor bottleneck: Misalnya mewarnai jalan merah jika banyak mobil berhenti lama.
-- [ ] Finalisasi estetika UI dan memastikan responsivitas layar dasar.
-- [ ] **Validasi Edge-Cases**: Buktikan apa yang terjadi saat data visualisasi heatmap overload karena render mobil terlalu banyak.
+- [x] Panel kontrol bawah untuk mengatur kecepatan simulasi (1x, 2x, 5x).
+- [x] Panel informasi (Dashboard sederhana) menampilkan "Jumlah Mobil Aktif" dan FPS (kinerja canvas).
+- [x] Fitur observasi *Heatmap* atau sekadar detektor bottleneck: Misalnya mewarnai jalan merah jika banyak mobil berhenti lama.
+- [x] Finalisasi estetika UI dan memastikan responsivitas layar dasar.
+- [x] **Validasi Edge-Cases**: Buktikan apa yang terjadi saat data visualisasi heatmap overload karena render mobil terlalu banyak. (Penyelesaian: Menggunakan O(N) agregasi dictionary dan 1 kali O(M) `fillRect` per tile untuk mencegah overdraw).
 
 ---
 
