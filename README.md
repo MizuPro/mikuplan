@@ -26,10 +26,12 @@ npm install
 ### 3. Menjalankan Server
 Jalankan server Node.js lokal dengan perintah:
 ```bash
-npm start
+npm run mikuplan
+# Atau alias singkat:
+npm run mp
 ```
 Buka peramban (browser) Anda dan akses:  
-👉 **[http://localhost:3000](http://localhost:3000)**
+👉 **[http://localhost:6767](http://localhost:6767)**
 
 ---
 

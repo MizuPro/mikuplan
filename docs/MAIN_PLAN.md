@@ -57,10 +57,10 @@ Fokus: Membuat otak logika eksekutor untuk membaca Task List dan menulis kode.
 ## 📦 Fase 5: Finalisasi & Deployment Lokal
 Fokus: Memastikan *developer experience* (DX) sempurna saat dijalankan oleh pengguna baru.
 
-- [x] Tulis instruksi lengkap di `README.md` tentang cara *clone*, `npm install`, `npm start`, dan cara memanggil skill di AI assistant pengguna.
+- [x] Tulis instruksi lengkap di `README.md` tentang cara *clone*, `npm install`, `npm run mikuplan` / `npm run mp`, dan cara memanggil skill di AI assistant pengguna.
 - [x] Pastikan file `state.json` (data pengguna), `node_modules`, dan file sensitif lainnya berada di dalam `.gitignore`.
 - [x] Lakukan *End-to-End Test* secara keseluruhan dengan skenario *real*:
-  1. Jalankan `npm start`.
+  1. Jalankan `npm run mikuplan` atau `npm run mp`.
   2. Isi frontend dengan ide.
   3. Panggil `mikuplan`.
   4. Lihat UI auto-refresh.

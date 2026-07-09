@@ -6,7 +6,8 @@
     "doc": "docs"
   },
   "scripts": {
-    "start": "node server.js",
+    "mikuplan": "node server.js",
+    "mp": "node server.js",
     "test": "node --test"
   },
   "keywords": [],

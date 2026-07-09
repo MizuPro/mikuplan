@@ -54,7 +54,7 @@
             margin-bottom: 0.5em;
             letter-spacing: -0.02em;
         }
-        .markdown-body h1 { font-size: 1.8rem; border-b: 1px solid #E5E7EB; padding-bottom: 0.3em; }
+        .markdown-body h1 { font-size: 1.8rem; border-bottom: 1px solid #E5E7EB; padding-bottom: 0.3em; }
         .markdown-body h2 { font-size: 1.4rem; }
         .markdown-body h3 { font-size: 1.1rem; }
         .markdown-body p { margin-bottom: 1em; }
@@ -97,6 +97,86 @@
             70% { transform: scale(1); box-shadow: 0 0 0 4px rgba(0, 0, 0, 0); }
             100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); }
         }
+
+        #screen-mindmap {
+            --mindmap-zoom: 1.0;
+            --pan-x: 0px;
+            --pan-y: 0px;
+        }
+
+        /* Mindmap Visual Styling */
+        .mindmap-viewport {
+            position: relative;
+            background-color: #0b0f19;
+            background-image: radial-gradient(#1e293b 1px, transparent 1px);
+            background-size: calc(20px * var(--mindmap-zoom)) calc(20px * var(--mindmap-zoom));
+            background-position: var(--pan-x) var(--pan-y);
+            overflow: hidden; /* Infinite canvas: no scrollbars */
+            min-height: 500px;
+        }
+
+        /* Terapkan Scale dan Translate pada Wrapper */
+        #mindmap-inner-wrapper {
+            transform: translate(var(--pan-x), var(--pan-y)) scale(var(--mindmap-zoom));
+            transform-origin: 0 0;
+            will-change: transform;
+        }
+        
+        .mindmap-node {
+            background-color: #131a26;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 12px 16px;
+            min-width: 220px;
+            max-width: 280px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #e2e8f0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .mindmap-node:hover {
+            border-color: #38bdf8;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+            transform: translateY(-1px);
+        }
+
+        .mindmap-node.root-node {
+            background-color: #1e1b4b;
+            border-color: #4f46e5;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+        }
+
+        .mindmap-node.root-node:hover {
+            border-color: #6366f1;
+            box-shadow: 0 0 16px rgba(99, 102, 241, 0.4);
+        }
+
+        .mindmap-node-title {
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            font-size: 0.875rem;
+        }
+        
+        .mindmap-node-desc {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        .mindmap-node-badge {
+            font-size: 0.65rem;
+            font-family: 'Geist Mono', monospace;
+            background-color: #1e293b;
+            color: #38bdf8;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-weight: 700;
+            display: inline-block;
+            margin-top: 8px;
+        }
     </style>
     <script id="tailwind-config">
         tailwind.config = {
@@ -128,7 +208,7 @@
 <body class="bg-background text-primary min-h-screen flex flex-row overflow-hidden">
 
     <!-- Left Sidebar -->
-    <aside class="hidden md:flex flex-col h-screen sticky top-0 bg-surface border-r border-border w-64 select-none">
+    <aside class="hidden md:flex flex-col h-screen sticky top-0 bg-surface border-r border-border w-52 select-none">
         <div class="px-md py-xl">
             <h1 class="text-2xl font-black tracking-tighter text-primary">PRD-PLANNER</h1>
             <p class="font-mono text-[9px] uppercase tracking-[0.2em] text-secondary font-bold">V1.0.0 (MVP)</p>
@@ -275,25 +355,50 @@
             </div>
 
             <!-- SCREEN 3: STRUCTURE/MINDMAP -->
-            <div id="screen-mindmap" class="hidden flex-1 flex flex-col">
-                <section class="p-lg md:p-xl border-b border-border bg-surface">
-                    <h2 class="font-mono text-2xl font-black uppercase tracking-tighter">03 / PETA STRUKTUR FITUR</h2>
-                    <p class="font-body-md text-secondary mt-xs">
+            <div id="screen-mindmap" class="hidden flex-1 flex flex-col overflow-hidden">
+                <section class="py-2 px-md border-b border-border bg-surface flex-shrink-0">
+                    <h2 class="font-mono text-sm font-bold uppercase tracking-widest text-neutral-800">03 / PETA STRUKTUR FITUR</h2>
+                    <p class="text-[11px] text-neutral-500 mt-0.5">
                         Struktur fitur dan arsitektur produk yang dirancang oleh AI. Silakan tinjau modul-modul ini sebelum beralih ke penyusunan dokumen PRD.
                     </p>
                 </section>
-                <div class="p-lg md:p-xl flex-grow overflow-y-auto">
-                    <div class="border border-border p-md bg-neutral-50 min-h-[300px]">
-                        <h3 id="mindmap-title" class="font-bold text-lg border-b border-neutral-300 pb-sm mb-md uppercase tracking-tight">STRUKTUR FITUR MVP</h3>
-                        <div id="mindmap-tree" class="flex flex-col gap-sm">
-                            <!-- Mindmap nodes render here -->
+                <div class="flex-1 overflow-hidden relative">
+                    <!-- Mindmap Viewport with dark dot-grid -->
+                    <div id="mindmap-viewport" class="mindmap-viewport w-full h-full relative cursor-grab">
+                        <!-- Inner Wrapper for centering and scroll containment -->
+                        <div id="mindmap-inner-wrapper" class="relative p-xl inline-flex items-center min-w-full min-h-full">
+                            <!-- SVG Connector Overlay -->
+                            <svg id="mindmap-svg" class="absolute inset-0 pointer-events-none w-full h-full" style="z-index: 5;"></svg>
+                            
+                            <!-- Root Flex Container -->
+                            <div id="mindmap-tree" class="flex flex-row items-center gap-8 relative z-10 select-none">
+                                <!-- Mindmap nodes render here dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Floating Zoom Control Widget -->
+                        <div class="absolute bottom-4 right-4 z-30 flex items-center gap-1 bg-slate-900/90 border border-slate-700 p-1 rounded-lg shadow-lg select-none">
+                            <button id="btn-zoom-out" class="w-8 h-8 flex items-center justify-center text-slate-300 hover:text-white hover:bg-slate-800 rounded transition-colors" title="Zoom Out (Ctrl + Scroll Down)">
+                                <span class="material-symbols-outlined text-[18px]">remove</span>
+                            </button>
+                            <span id="zoom-indicator" class="text-[11px] font-mono text-slate-300 px-2 min-w-[40px] text-center">100%</span>
+                            <button id="btn-zoom-in" class="w-8 h-8 flex items-center justify-center text-slate-300 hover:text-white hover:bg-slate-800 rounded transition-colors" title="Zoom In (Ctrl + Scroll Up)">
+                                <span class="material-symbols-outlined text-[18px]">add</span>
+                            </button>
+                            <div class="w-[1px] h-4 bg-slate-700 mx-1"></div>
+                            <button id="btn-zoom-reset" class="w-8 h-8 flex items-center justify-center text-slate-300 hover:text-white hover:bg-slate-800 rounded transition-colors" title="Reset Zoom">
+                                <span class="material-symbols-outlined text-[18px]">restart_alt</span>
+                            </button>
                         </div>
                     </div>
                 </div>
-                <div class="p-lg border-t border-border bg-white flex justify-end">
-                    <button id="btn-approve-mindmap" class="bg-primary text-on-primary px-lg py-md flex items-center gap-md hover:bg-neutral-800 transition-all font-mono text-[11px] tracking-widest uppercase">
-                        <span>Lanjutkan ke Dokumen PRD</span>
-                        <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                <div class="py-2 px-md border-t border-border bg-white flex justify-between items-center flex-shrink-0">
+                    <div class="text-[10px] text-secondary font-mono">
+                        💡 Klik kiri & geser mouse untuk navigasi | Gunakan panel zoom atau Ctrl + Scroll untuk Zoom.
+                    </div>
+                    <button id="btn-approve-mindmap" class="bg-primary text-on-primary px-4 py-1.5 flex items-center gap-sm hover:bg-neutral-800 transition-all font-mono text-[10px] tracking-widest uppercase rounded">
+                        <span>Lanjutkan ke PRD</span>
+                        <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
                     </button>
                 </div>
             </div>
@@ -518,85 +623,170 @@
 
         // Render Mindmap Screen
         function renderMindmap(data) {
-            const titleEl = document.getElementById('mindmap-title');
             const treeEl = document.getElementById('mindmap-tree');
+            const svgEl = document.getElementById('mindmap-svg');
+            
+            if (!treeEl || !svgEl) return;
             treeEl.innerHTML = '';
+            svgEl.innerHTML = '';
 
             const mindmap = data.mindmap || {};
-            titleEl.innerText = mindmap.title || 'STRUKTUR FITUR MVP';
-
+            
             if (mindmap.nodes && Array.isArray(mindmap.nodes)) {
-                mindmap.nodes.forEach(node => {
-                    const nodeEl = renderNode(node, 0);
-                    treeEl.appendChild(nodeEl);
-                });
+                // Buat Root Node virtual agar ada induk utama di paling kiri
+                const rootVirtualNode = {
+                    id: "root-project",
+                    label: mindmap.title || "PERENCANAAN",
+                    description: "Root ide proyek awal",
+                    expanded: true,
+                    children: mindmap.nodes
+                };
+
+                const rootEl = renderMindmapNode(rootVirtualNode, true);
+                treeEl.appendChild(rootEl);
+                
+                // Gambar garis konektor setelah browser selesai me-render & me-layout
+                setTimeout(drawMindmapConnections, 100);
             } else {
                 treeEl.innerHTML = '<p class="text-xs font-mono text-secondary">Tidak ada data struktur fitur yang tersedia.</p>';
             }
         }
 
-        // Render Individual Node recursively
-        function renderNode(node, depth) {
-            const container = document.createElement('div');
-            container.className = `flex flex-col gap-1 ${depth > 0 ? 'ml-6 border-l border-neutral-300 pl-4 py-1' : 'border border-border p-sm bg-white'}`;
+        // Render Individual Node recursively in horizontal flexbox
+        function renderMindmapNode(node, isRoot = false) {
+            const rowContainer = document.createElement('div');
+            rowContainer.className = "flex flex-row items-center gap-4 relative";
 
+            // Buat elemen Node
+            const nodeEl = document.createElement('div');
+            nodeEl.id = `node-${node.id}`;
+            nodeEl.className = `mindmap-node ${isRoot ? 'root-node' : ''} flex flex-col justify-between`;
+            
+            // Header: Judul & Icon Expand
             const header = document.createElement('div');
-            header.className = "flex items-center justify-between cursor-pointer group";
+            header.className = "flex items-start justify-between gap-sm w-full";
 
-            const left = document.createElement('div');
-            left.className = "flex items-center gap-xs";
+            const title = document.createElement('div');
+            title.className = `mindmap-node-title font-bold text-sm ${isRoot ? 'text-indigo-200' : 'text-slate-100'} flex-grow`;
+            title.innerText = node.label;
+            header.appendChild(title);
 
-            if (node.children && node.children.length > 0) {
+            // Icon Expand/Collapse jika memiliki anak
+            const hasChildren = node.children && node.children.length > 0;
+            if (hasChildren && !isRoot) { // Biarkan root selalu expand
+                const expandBtn = document.createElement('button');
+                expandBtn.className = "text-slate-400 hover:text-white transition-colors flex items-center justify-center p-0.5 rounded hover:bg-slate-800 flex-shrink-0";
+                
                 const icon = document.createElement('span');
-                icon.className = "material-symbols-outlined text-[16px] text-neutral-400 group-hover:text-black";
-                icon.innerText = node.expanded === false ? 'expand_more' : 'expand_less';
-                left.appendChild(icon);
-
-                header.onclick = (e) => {
+                icon.className = "material-symbols-outlined text-[18px]";
+                icon.innerText = node.expanded === false ? 'chevron_right' : 'keyboard_arrow_down';
+                expandBtn.appendChild(icon);
+                
+                expandBtn.onclick = (e) => {
                     e.stopPropagation();
                     node.expanded = node.expanded === false ? true : false;
-                    // Save local toggle to server state (optional) or just re-render
                     renderMindmap(currentState);
                 };
-            } else {
-                const dot = document.createElement('span');
-                dot.className = "w-1.5 h-1.5 bg-neutral-400 ml-2 mr-2";
-                left.appendChild(dot);
+                header.appendChild(expandBtn);
             }
+            nodeEl.appendChild(header);
 
-            const label = document.createElement('span');
-            label.className = "font-bold text-sm text-neutral-800";
-            label.innerText = node.label;
-            left.appendChild(label);
-
-            if (node.fase) {
-                const badge = document.createElement('span');
-                badge.className = "font-mono text-[9px] bg-neutral-100 text-neutral-600 border border-neutral-200 px-md rounded-full font-bold";
-                badge.innerText = node.fase;
-                left.appendChild(badge);
-            }
-
-            header.appendChild(left);
-
+            // Deskripsi
             if (node.description) {
-                const desc = document.createElement('span');
-                desc.className = "text-xs text-secondary hidden md:inline ml-sm font-light";
-                desc.innerText = `— ${node.description}`;
-                left.appendChild(desc);
+                const desc = document.createElement('div');
+                desc.className = "mindmap-node-desc text-xs text-slate-400 mt-1";
+                desc.innerText = node.description;
+                nodeEl.appendChild(desc);
             }
 
-            container.appendChild(header);
+            // Badge Fase jika ada
+            if (node.fase) {
+                const badgeContainer = document.createElement('div');
+                badgeContainer.className = "flex justify-between items-center mt-2 w-full";
+                
+                const badge = document.createElement('span');
+                badge.className = "mindmap-node-badge font-mono text-[9px] bg-slate-800 text-sky-400 border border-slate-700 px-2 py-0.5 rounded-full font-bold";
+                badge.innerText = node.fase;
+                badgeContainer.appendChild(badge);
+                nodeEl.appendChild(badgeContainer);
+            }
 
-            if (node.children && node.children.length > 0 && node.expanded !== false) {
-                const childrenContainer = document.createElement('div');
-                childrenContainer.className = "flex flex-col gap-xs";
+            rowContainer.appendChild(nodeEl);
+
+            // Jika memiliki children dan statusnya expanded, render children column di sebelah kanan
+            if (hasChildren && node.expanded !== false) {
+                const childrenCol = document.createElement('div');
+                childrenCol.className = "flex flex-col gap-6 relative pl-12 py-2";
+
                 node.children.forEach(child => {
-                    childrenContainer.appendChild(renderNode(child, depth + 1));
+                    const childNodeEl = renderMindmapNode(child, false);
+                    childrenCol.appendChild(childNodeEl);
                 });
-                container.appendChild(childrenContainer);
+                rowContainer.appendChild(childrenCol);
             }
 
-            return container;
+            return rowContainer;
+        }
+
+        // Draw Bezier Curves between parent and child nodes
+        function drawMindmapConnections() {
+            const svg = document.getElementById('mindmap-svg');
+            const wrapper = document.getElementById('mindmap-inner-wrapper');
+            if (!svg || !wrapper) return;
+            
+            svg.innerHTML = '';
+
+            const mindmap = currentState?.mindmap || {};
+            if (mindmap.nodes && Array.isArray(mindmap.nodes)) {
+                const rootVirtualNode = {
+                    id: "root-project",
+                    children: mindmap.nodes
+                };
+                drawNodeConnectionsRecursive(rootVirtualNode, svg, wrapper);
+            }
+        }
+
+        function drawNodeConnectionsRecursive(node, svg, wrapper) {
+            if (!node.children || node.children.length === 0 || node.expanded === false) {
+                return;
+            }
+
+            const parentEl = document.getElementById(`node-${node.id}`);
+            if (!parentEl) return;
+
+            const rectParent = parentEl.getBoundingClientRect();
+            const rectWrapper = wrapper.getBoundingClientRect();
+
+            // Sisi kanan tengah parent
+            // Kita bagi dengan currentZoom karena SVG dan Wrapper ter-scale (CSS transform), 
+            // sedangkan getBoundingClientRect mengembalikan nilai fisik sesudah di-scale.
+            const x1 = (rectParent.right - rectWrapper.left) / currentZoom;
+            const y1 = (rectParent.top + rectParent.height / 2 - rectWrapper.top) / currentZoom;
+
+            node.children.forEach(child => {
+                const childEl = document.getElementById(`node-${child.id}`);
+                if (!childEl) return;
+
+                const rectChild = childEl.getBoundingClientRect();
+                
+                // Sisi kiri tengah child
+                const x2 = (rectChild.left - rectWrapper.left) / currentZoom;
+                const y2 = (rectChild.top + rectChild.height / 2 - rectWrapper.top) / currentZoom;
+
+                // Hitung kurva bezier
+                const dx = Math.abs(x2 - x1) * 0.45;
+                const d = `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
+
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('d', d);
+                path.setAttribute('stroke', '#334155'); // Slate-700
+                path.setAttribute('stroke-width', '1.5');
+                path.setAttribute('fill', 'none');
+                svg.appendChild(path);
+
+                // Rekursif ke child
+                drawNodeConnectionsRecursive(child, svg, wrapper);
+            });
         }
 
         // Render PRD Screen
@@ -787,6 +977,121 @@
         screenLoading.classList.remove('hidden');
         fetchState();
         pollingInterval = setInterval(fetchState, 3000);
+
+        // Window resize event to redraw connections
+        window.addEventListener('resize', () => {
+            if (currentState && currentState.state === 3) {
+                drawMindmapConnections();
+            }
+        });
+
+        // --- Infinite Canvas (Pan & Optical Zoom) ---
+        const viewport = document.getElementById('mindmap-viewport');
+        const zoomIndicator = document.getElementById('zoom-indicator');
+        
+        let isDown = false;
+        let startX, startY;
+        let panX = 0;
+        let panY = 0;
+        let initialPanX = 0;
+        let initialPanY = 0;
+        
+        let currentZoom = 1.0;
+        const zoomMin = 0.4;
+        const zoomMax = 2.0;
+        const zoomStep = 0.1;
+
+        viewport.addEventListener('mousedown', (e) => {
+            // Hanya drag jika klik pada area kosong (latar belakang gelap), bukan pada tombol, node, dll.
+            if (e.target.closest('.mindmap-node') || e.target.closest('button')) return;
+            isDown = true;
+            viewport.className = 'mindmap-viewport w-full h-full relative cursor-grabbing';
+            startX = e.clientX;
+            startY = e.clientY;
+            initialPanX = panX;
+            initialPanY = panY;
+        });
+
+        viewport.addEventListener('mouseleave', () => {
+            isDown = false;
+            viewport.className = 'mindmap-viewport w-full h-full relative cursor-grab';
+        });
+
+        viewport.addEventListener('mouseup', () => {
+            isDown = false;
+            viewport.className = 'mindmap-viewport w-full h-full relative cursor-grab';
+        });
+
+        viewport.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            
+            // Perbarui panX dan panY
+            panX = initialPanX + dx;
+            panY = initialPanY + dy;
+            
+            // Terapkan ke CSS Variables
+            screenMindmap.style.setProperty('--pan-x', `${panX}px`);
+            screenMindmap.style.setProperty('--pan-y', `${panY}px`);
+        });
+
+        function updateZoom(newZoom) {
+            // Batasi nilai zoom
+            currentZoom = Math.max(zoomMin, Math.min(zoomMax, parseFloat(newZoom.toFixed(2))));
+            
+            // Set CSS Variable
+            screenMindmap.style.setProperty('--mindmap-zoom', currentZoom);
+            
+            // Perbarui indikator teks
+            zoomIndicator.innerText = `${Math.round(currentZoom * 100)}%`;
+            
+            // Karena SVG ada di dalam wrapper, ia akan ikut ter-scale oleh CSS Transform, 
+            // sehingga drawMindmapConnections() tidak perlu dipanggil berulang kali saat zoom.
+        }
+
+        document.getElementById('btn-zoom-in').onclick = () => {
+            updateZoom(currentZoom + zoomStep);
+        };
+
+        document.getElementById('btn-zoom-out').onclick = () => {
+            updateZoom(currentZoom - zoomStep);
+        };
+
+        document.getElementById('btn-zoom-reset').onclick = () => {
+            panX = 0;
+            panY = 0;
+            screenMindmap.style.setProperty('--pan-x', `${panX}px`);
+            screenMindmap.style.setProperty('--pan-y', `${panY}px`);
+            updateZoom(1.0);
+        };
+
+        // Zoom via Mouse Wheel (berpusat pada mouse) - tanpa perlu Ctrl
+        viewport.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            
+            // Menentukan titik fokus zoom
+            const rect = viewport.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            
+            const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
+            const newZoom = currentZoom * zoomFactor;
+            const clampedZoom = Math.max(zoomMin, Math.min(zoomMax, newZoom));
+            
+            if (clampedZoom !== currentZoom) {
+                // Geser panX dan panY agar zoom mengarah ke mouse (Optical Scale Offset)
+                const ratio = clampedZoom / currentZoom;
+                panX = mouseX - (mouseX - panX) * ratio;
+                panY = mouseY - (mouseY - panY) * ratio;
+                
+                screenMindmap.style.setProperty('--pan-x', `${panX}px`);
+                screenMindmap.style.setProperty('--pan-y', `${panY}px`);
+                
+                updateZoom(clampedZoom);
+            }
+        }, { passive: false });
     </script>
 </body>
 </html>
