@@ -104,12 +104,12 @@
             --pan-y: 0px;
         }
 
-        /* Mindmap Visual Styling */
+        /* Mindmap Visual Styling (Light/Clean Aesthetic) */
         .mindmap-viewport {
             position: relative;
-            background-color: #0b0f19;
-            background-image: radial-gradient(#1e293b 1px, transparent 1px);
-            background-size: calc(20px * var(--mindmap-zoom)) calc(20px * var(--mindmap-zoom));
+            background-color: #FAFAFA;
+            background-image: radial-gradient(#E5E7EB 1.5px, transparent 1.5px);
+            background-size: 24px 24px;
             background-position: var(--pan-x) var(--pan-y);
             overflow: hidden; /* Infinite canvas: no scrollbars */
             min-height: 500px;
@@ -123,59 +123,61 @@
         }
         
         .mindmap-node {
-            background-color: #131a26;
-            border: 1px solid #1e293b;
+            background-color: #FFFFFF;
+            border: 1px solid #E5E7EB;
             border-radius: 8px;
-            padding: 12px 16px;
-            min-width: 220px;
-            max-width: 280px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            padding: 14px 18px;
+            min-width: 240px;
+            max-width: 300px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            color: #e2e8f0;
+            color: #111827;
             position: relative;
             z-index: 10;
         }
 
         .mindmap-node:hover {
-            border-color: #38bdf8;
-            box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
-            transform: translateY(-1px);
+            border-color: #D1D5DB;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+            transform: translateY(-2px);
         }
 
         .mindmap-node.root-node {
-            background-color: #1e1b4b;
-            border-color: #4f46e5;
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+            background-color: #F8FAFC;
+            border: 2px solid #000000;
+            box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.1);
         }
 
         .mindmap-node.root-node:hover {
-            border-color: #6366f1;
-            box-shadow: 0 0 16px rgba(99, 102, 241, 0.4);
+            border-color: #000000;
+            box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.15);
         }
 
         .mindmap-node-title {
             font-weight: 700;
             letter-spacing: -0.01em;
-            font-size: 0.875rem;
+            font-size: 0.9rem;
+            color: #111827;
         }
         
         .mindmap-node-desc {
             font-size: 0.75rem;
-            color: #94a3b8;
-            margin-top: 4px;
-            line-height: 1.4;
+            color: #6B7280;
+            margin-top: 6px;
+            line-height: 1.5;
         }
 
         .mindmap-node-badge {
             font-size: 0.65rem;
             font-family: 'Geist Mono', monospace;
-            background-color: #1e293b;
-            color: #38bdf8;
+            background-color: #F1F5F9;
+            color: #475569;
+            border: 1px solid #E2E8F0;
             padding: 2px 8px;
             border-radius: 9999px;
-            font-weight: 700;
+            font-weight: 600;
             display: inline-block;
-            margin-top: 8px;
+            margin-top: 10px;
         }
     </style>
     <script id="tailwind-config">
@@ -232,6 +234,10 @@
                 <div data-step="4" class="flex items-center gap-sm px-md py-sm transition-all duration-150 font-mono text-[11px] tracking-widest text-secondary">
                     <span class="material-symbols-outlined text-[18px]">description</span>
                     <span>4 / PRD FINAL</span>
+                </div>
+                <div data-step="5" class="flex items-center gap-sm px-md py-sm transition-all duration-150 font-mono text-[11px] tracking-widest text-secondary">
+                    <span class="material-symbols-outlined text-[18px]">construction</span>
+                    <span>5 / EKSEKUSI</span>
                 </div>
             </div>
         </nav>
@@ -448,8 +454,62 @@
                 </div>
             </div>
 
+            <!-- SCREEN 5: EXECUTION (IMPLEMENTATION) -->
+            <div id="screen-execution" class="hidden flex-1 flex flex-col overflow-hidden">
+                <section class="p-lg md:p-xl border-b border-border bg-surface flex-shrink-0">
+                    <div class="flex justify-between items-center">
+                        <div class="flex flex-col">
+                            <h2 class="font-mono text-2xl font-black uppercase tracking-tighter">🛠️ EKSEKUSI PEMBANGUNAN</h2>
+                            <p class="text-xs text-secondary mt-1">Daftar tugas pembangunan aplikasi berdasarkan file MAIN_PLAN.md secara real-time.</p>
+                        </div>
+                        <div class="flex flex-col items-end gap-1">
+                            <span id="execution-progress-lbl" class="font-mono text-xs text-secondary tracking-widest font-bold">PROGRES: 0 / 0 TUGAS SELESAI</span>
+                            <span class="bg-green-100 text-green-800 border border-green-200 px-md py-xs font-mono text-[9px] uppercase tracking-widest font-bold flex items-center gap-xs">
+                                <span class="material-symbols-outlined text-[12px] animate-pulse">construction</span> FASE EKSEKUSI
+                            </span>
+                        </div>
+                    </div>
+                    <div class="w-full bg-neutral-200 h-1 mt-md">
+                        <div id="execution-progress-bar" class="bg-green-600 h-1 transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </section>
+                
+                <div class="flex-grow overflow-y-auto p-lg md:p-xl flex flex-col gap-lg bg-neutral-50">
+                    <div id="phases-container" class="flex flex-col gap-8 max-w-4xl mx-auto w-full">
+                        <!-- Dynamic content -->
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
+
+    <!-- Custom Confirmation Modal Overlay -->
+    <div id="confirm-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <!-- Backdrop -->
+        <div id="confirm-modal-backdrop" class="absolute inset-0 bg-neutral-950/45 backdrop-blur-sm transition-opacity duration-300 opacity-0"></div>
+        <!-- Modal Card -->
+        <div id="confirm-modal-card" class="relative bg-white border border-neutral-200 rounded-lg shadow-xl max-w-sm w-full overflow-hidden transform scale-95 opacity-0 transition-all duration-300 ease-out z-10">
+            <div class="p-lg">
+                <div class="flex flex-col items-center text-center">
+                    <div class="w-12 h-12 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-800 border border-neutral-200 mb-md shadow-sm">
+                        <span id="confirm-modal-icon" class="material-symbols-outlined text-[24px]">help</span>
+                    </div>
+                    <h3 id="confirm-modal-title" class="text-sm font-bold text-neutral-900 tracking-wider uppercase font-mono">Konfirmasi</h3>
+                    <p id="confirm-modal-message" class="text-[13px] text-neutral-500 mt-sm leading-relaxed font-sans"></p>
+                </div>
+            </div>
+            <!-- Footer Buttons -->
+            <div class="bg-neutral-50 px-lg py-md flex gap-sm border-t border-neutral-100">
+                <button id="confirm-modal-btn-cancel" class="flex-1 border border-neutral-200 bg-white text-neutral-600 py-2 hover:bg-neutral-100 hover:text-neutral-900 transition-colors font-mono text-[10px] tracking-widest uppercase">
+                    Batal
+                </button>
+                <button id="confirm-modal-btn-confirm" class="flex-1 bg-black text-white py-2 hover:bg-neutral-850 transition-colors font-mono text-[10px] tracking-widest uppercase flex items-center justify-center gap-xs">
+                    Ya, Lanjutkan
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Client Script -->
     <script>
@@ -472,9 +532,73 @@
         const screenQuestionnaire = document.getElementById('screen-questionnaire');
         const screenMindmap = document.getElementById('screen-mindmap');
         const screenPrd = document.getElementById('screen-prd');
+        const screenExecution = document.getElementById('screen-execution');
 
         // Initial setup for Mermaid
         mermaid.initialize({ startOnLoad: false, theme: 'neutral' });
+
+        // Custom Promise-based Confirmation Dialog
+        function showConfirm({ title, message, confirmText = 'Ya, Lanjutkan', cancelText = 'Batal', icon = 'help' }) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('confirm-modal');
+                const backdrop = document.getElementById('confirm-modal-backdrop');
+                const card = document.getElementById('confirm-modal-card');
+                const titleEl = document.getElementById('confirm-modal-title');
+                const messageEl = document.getElementById('confirm-modal-message');
+                const btnCancel = document.getElementById('confirm-modal-btn-cancel');
+                const btnConfirm = document.getElementById('confirm-modal-btn-confirm');
+                const iconEl = document.getElementById('confirm-modal-icon');
+
+                titleEl.innerText = title;
+                messageEl.innerText = message;
+                btnConfirm.innerText = confirmText;
+                btnCancel.innerText = cancelText;
+                if (iconEl) iconEl.innerText = icon;
+
+                // Show modal
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                
+                // Trigger transition
+                setTimeout(() => {
+                    backdrop.classList.remove('opacity-0');
+                    backdrop.classList.add('opacity-100');
+                    card.classList.remove('scale-95', 'opacity-0');
+                    card.classList.add('scale-100', 'opacity-100');
+                }, 10);
+
+                const handleKeyDown = (e) => {
+                    if (e.key === 'Escape') {
+                        close(false);
+                    }
+                };
+                window.addEventListener('keydown', handleKeyDown);
+
+                function close(result) {
+                    backdrop.classList.remove('opacity-100');
+                    backdrop.classList.add('opacity-0');
+                    card.classList.remove('scale-100', 'opacity-100');
+                    card.classList.add('scale-95', 'opacity-0');
+
+                    setTimeout(() => {
+                        modal.classList.remove('flex');
+                        modal.classList.add('hidden');
+                    }, 300);
+
+                    // Clean up event handlers to prevent memory leaks
+                    btnConfirm.onclick = null;
+                    btnCancel.onclick = null;
+                    backdrop.onclick = null;
+                    window.removeEventListener('keydown', handleKeyDown);
+
+                    resolve(result);
+                }
+
+                btnConfirm.onclick = () => close(true);
+                btnCancel.onclick = () => close(false);
+                backdrop.onclick = () => close(false);
+            });
+        }
 
         // Polling function
         async function fetchState() {
@@ -520,13 +644,27 @@
             screenQuestionnaire.classList.add('hidden');
             screenMindmap.classList.add('hidden');
             screenPrd.classList.add('hidden');
+            screenExecution.classList.add('hidden');
+
+            // Clear execution polling if not in state 5 (or state 4 finalized)
+            if (data.state !== 5 && !(data.state === 4 && data.prd && data.prd.finalized)) {
+                if (executionPollingInterval) {
+                    clearInterval(executionPollingInterval);
+                    executionPollingInterval = null;
+                }
+            }
 
             // Highlight Active Sidebar Step
             document.querySelectorAll('#sidebar-nav [data-step]').forEach(el => {
                 const stepNum = parseInt(el.getAttribute('data-step'));
                 el.className = "flex items-center gap-sm px-md py-sm transition-all duration-150 font-mono text-[11px] tracking-widest text-secondary";
                 
-                if (data.state === stepNum) {
+                let activeStep = data.state;
+                if (data.state === 4 && data.prd && data.prd.finalized) {
+                    activeStep = 5;
+                }
+                
+                if (activeStep === stepNum) {
                     el.classList.remove('text-secondary');
                     el.classList.add('bg-primary', 'text-on-primary');
                 }
@@ -555,8 +693,15 @@
                 renderMindmap(data);
             } 
             else if (data.state === 4) {
-                screenPrd.classList.remove('hidden');
-                renderPrd(data);
+                if (data.prd && data.prd.finalized) {
+                    renderExecution(data);
+                } else {
+                    screenPrd.classList.remove('hidden');
+                    renderPrd(data);
+                }
+            }
+            else if (data.state === 5) {
+                renderExecution(data);
             }
         }
 
@@ -667,7 +812,7 @@
             header.className = "flex items-start justify-between gap-sm w-full";
 
             const title = document.createElement('div');
-            title.className = `mindmap-node-title font-bold text-sm ${isRoot ? 'text-indigo-200' : 'text-slate-100'} flex-grow`;
+            title.className = `mindmap-node-title flex-grow`;
             title.innerText = node.label;
             header.appendChild(title);
 
@@ -675,7 +820,7 @@
             const hasChildren = node.children && node.children.length > 0;
             if (hasChildren && !isRoot) { // Biarkan root selalu expand
                 const expandBtn = document.createElement('button');
-                expandBtn.className = "text-slate-400 hover:text-white transition-colors flex items-center justify-center p-0.5 rounded hover:bg-slate-800 flex-shrink-0";
+                expandBtn.className = "text-gray-400 hover:text-black transition-colors flex items-center justify-center p-0.5 rounded hover:bg-gray-100 flex-shrink-0";
                 
                 const icon = document.createElement('span');
                 icon.className = "material-symbols-outlined text-[18px]";
@@ -694,7 +839,7 @@
             // Deskripsi
             if (node.description) {
                 const desc = document.createElement('div');
-                desc.className = "mindmap-node-desc text-xs text-slate-400 mt-1";
+                desc.className = "mindmap-node-desc";
                 desc.innerText = node.description;
                 nodeEl.appendChild(desc);
             }
@@ -705,7 +850,7 @@
                 badgeContainer.className = "flex justify-between items-center mt-2 w-full";
                 
                 const badge = document.createElement('span');
-                badge.className = "mindmap-node-badge font-mono text-[9px] bg-slate-800 text-sky-400 border border-slate-700 px-2 py-0.5 rounded-full font-bold";
+                badge.className = "mindmap-node-badge";
                 badge.innerText = node.fase;
                 badgeContainer.appendChild(badge);
                 nodeEl.appendChild(badgeContainer);
@@ -779,7 +924,7 @@
 
                 const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                 path.setAttribute('d', d);
-                path.setAttribute('stroke', '#334155'); // Slate-700
+                path.setAttribute('stroke', '#cbd5e1');
                 path.setAttribute('stroke-width', '1.5');
                 path.setAttribute('fill', 'none');
                 svg.appendChild(path);
@@ -832,6 +977,122 @@
                         // Biarkan tag code/pre asli jika gagal agar tetap terbaca sebagai teks
                     }
                 }
+            }
+        }
+
+        // Polling status for execution
+        let executionPollingInterval = null;
+
+        async function renderExecution(data) {
+            screenExecution.classList.remove('hidden');
+            
+            // Start polling if not already started
+            if (!executionPollingInterval) {
+                // Fetch tasks immediately
+                fetchAndRenderTasks();
+                executionPollingInterval = setInterval(fetchAndRenderTasks, 3000);
+            }
+        }
+
+        async function fetchAndRenderTasks() {
+            try {
+                const response = await fetch('/api/tasks');
+                if (!response.ok) throw new Error('Gagal memuat tasks');
+                const phases = await response.json();
+                
+                const container = document.getElementById('phases-container');
+                container.innerHTML = '';
+
+                let totalTasks = 0;
+                let completedTasks = 0;
+
+                if (!phases || phases.length === 0) {
+                    container.innerHTML = `
+                        <div class="bg-white border border-border p-lg text-center rounded-lg shadow-sm">
+                            <span class="material-symbols-outlined text-4xl text-neutral-400 mb-2">draft</span>
+                            <p class="text-sm font-mono text-secondary">Belum ada daftar tugas teknis di docs/MAIN_PLAN.md.</p>
+                        </div>
+                    `;
+                    document.getElementById('execution-progress-lbl').innerText = `PROGRES: 0 / 0 TUGAS SELESAI`;
+                    document.getElementById('execution-progress-bar').style.width = `0%`;
+                    return;
+                }
+
+                phases.forEach(phase => {
+                    const phaseEl = document.createElement('div');
+                    phaseEl.className = "bg-white border border-border rounded-lg shadow-sm overflow-hidden flex flex-col";
+
+                    const header = document.createElement('div');
+                    header.className = "bg-neutral-50 px-md py-sm border-b border-border flex justify-between items-center";
+
+                    const title = document.createElement('h3');
+                    title.className = "font-mono text-xs font-bold text-neutral-900";
+                    title.innerText = phase.title;
+                    header.appendChild(title);
+
+                    // Hitung progres fase
+                    const phaseTotal = phase.tasks.length;
+                    const phaseCompleted = phase.tasks.filter(t => t.completed).length;
+                    const phaseInProgress = phase.tasks.filter(t => t.inProgress).length;
+                    
+                    totalTasks += phaseTotal;
+                    completedTasks += phaseCompleted;
+
+                    const badge = document.createElement('span');
+                    badge.className = "font-mono text-[9px] bg-neutral-200 text-neutral-700 px-md py-xs rounded-full font-bold";
+                    badge.innerText = `${phaseCompleted} / ${phaseTotal} SELESAI`;
+                    if (phaseCompleted === phaseTotal && phaseTotal > 0) {
+                        badge.className = "font-mono text-[9px] bg-green-100 text-green-800 border border-green-200 px-md py-xs rounded-full font-bold";
+                        badge.innerText = "LENGKAP";
+                    } else if (phaseInProgress > 0) {
+                        badge.className = "font-mono text-[9px] bg-amber-100 text-amber-800 border border-amber-200 px-md py-xs rounded-full font-bold animate-pulse";
+                        badge.innerText = "BERJALAN";
+                    }
+                    header.appendChild(badge);
+                    phaseEl.appendChild(header);
+
+                    const list = document.createElement('div');
+                    list.className = "divide-y divide-border";
+
+                    phase.tasks.forEach(task => {
+                        const item = document.createElement('div');
+                        item.className = "px-md py-sm flex items-start gap-md hover:bg-neutral-50/50 transition-colors";
+
+                        const iconContainer = document.createElement('div');
+                        iconContainer.className = "flex-shrink-0 mt-0.5";
+
+                        const label = document.createElement('span');
+                        label.className = "font-sans text-[12px] leading-relaxed flex-grow text-neutral-700";
+                        label.innerText = task.text;
+
+                        if (task.completed) {
+                            iconContainer.innerHTML = `<span class="material-symbols-outlined font-bold text-[18px]">check_circle</span>`;
+                            label.className += " line-through text-neutral-400";
+                            iconContainer.querySelector('span').style.color = '#16a34a';
+                        } else if (task.inProgress) {
+                            iconContainer.innerHTML = `<span class="material-symbols-outlined text-amber-500 font-bold animate-spin text-[18px]" style="display: inline-block;">cached</span>`;
+                            label.className += " text-neutral-900 font-semibold";
+                            item.className += " bg-amber-50/20";
+                        } else {
+                            iconContainer.innerHTML = `<span class="material-symbols-outlined text-neutral-300 text-[18px]">radio_button_unchecked</span>`;
+                        }
+
+                        item.appendChild(iconContainer);
+                        item.appendChild(label);
+                        list.appendChild(item);
+                    });
+
+                    phaseEl.appendChild(list);
+                    container.appendChild(phaseEl);
+                });
+
+                // Update Progress Summary
+                document.getElementById('execution-progress-lbl').innerText = `PROGRES: ${completedTasks} / ${totalTasks} TUGAS SELESAI`;
+                const pct = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+                document.getElementById('execution-progress-bar').style.width = `${pct}%`;
+
+            } catch (err) {
+                console.error('Error fetching tasks:', err);
             }
         }
 
@@ -957,8 +1218,16 @@
 
         // Screen 4: Finalize PRD
         document.getElementById('btn-finalize-prd').onclick = async () => {
-            if (confirm('Apakah Anda yakin ingin mengunci dan memfinalisasi dokumen PRD ini? Tindakan ini akan mengunci state perencanaan.')) {
+            const confirmed = await showConfirm({
+                title: 'Finalisasi Dokumen PRD',
+                message: 'Apakah Anda yakin ingin mengunci dan memfinalisasi dokumen PRD ini? Tindakan ini akan mengunci state perencanaan.',
+                confirmText: 'Ya, Kunci & Finalisasi',
+                cancelText: 'Batal',
+                icon: 'lock'
+            });
+            if (confirmed) {
                 await updateState({
+                    state: 5,
                     prd: {
                         ...currentState.prd,
                         finalized: true
