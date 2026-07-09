@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html class="light" lang="id" style="">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-sans/style.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-mono/style.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Geist', 'Inter', system-ui, sans-serif;
+        }
+
+        .font-mono {
+            font-family: 'Geist Mono', monospace;
+        }
+
+        /* Custom scrollbar for minimalist look */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #E5E7EB;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #000000;
+        }
+
+        /* Remove focus outline on textarea for Swiss aesthetic */
+        textarea:focus {
+            outline: none;
+            ring: 0;
+            border-color: #000000;
+        }
+    </style>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline-variant": "#cfc4c5",
+                        "surface-container": "#eeeeee",
+                        "tertiary-fixed-dim": "#c6c6c6",
+                        "on-primary-fixed-variant": "#474747",
+                        "on-error": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "secondary-container": "#dce2f3",
+                        "on-primary-container": "#848484",
+                        "on-secondary": "#ffffff",
+                        "warning": "#F59E0B",
+                        "tertiary": "#000000",
+                        "on-surface": "#1b1b1b",
+                        "surface-container-highest": "#e2e2e2",
+                        "on-surface-variant": "#4c4546",
+                        "on-secondary-fixed-variant": "#404754",
+                        "tertiary-container": "#1b1b1b",
+                        "secondary": "#585f6c",
+                        "surface": "#F9FAFB",
+                        "on-secondary-fixed": "#151c27",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed": "#1b1b1b",
+                        "surface-tint": "#5e5e5e",
+                        "secondary-fixed-dim": "#c0c7d6",
+                        "surface-container-high": "#e8e8e8",
+                        "on-tertiary-fixed-variant": "#474747",
+                        "outline": "#7e7576",
+                        "primary": "#000000",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed": "#e2e2e2",
+                        "on-background": "#1b1b1b",
+                        "surface-bright": "#f9f9f9",
+                        "primary-fixed-dim": "#c6c6c6",
+                        "secondary-fixed": "#dce2f3",
+                        "on-secondary-container": "#5e6572",
+                        "inverse-surface": "#303030",
+                        "background": "#FFFFFF",
+                        "success": "#10B981",
+                        "border": "#E5E7EB",
+                        "on-tertiary-container": "#848484",
+                        "primary-container": "#1b1b1b",
+                        "error": "#EF4444",
+                        "on-tertiary-fixed": "#1b1b1b",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-primary": "#c6c6c6",
+                        "inverse-on-surface": "#f1f1f1",
+                        "surface-dim": "#dadada",
+                        "surface-container-low": "#f3f3f3",
+                        "error-container": "#ffdad6",
+                        "surface-variant": "#e2e2e2",
+                        "primary-fixed": "#e2e2e2"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0rem",
+                        "lg": "0rem",
+                        "xl": "0rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xl": "48px",
+                        "md": "16px",
+                        "sm": "8px",
+                        "xs": "4px",
+                        "xxl": "80px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "h1": ["Geist", "Inter", "system-ui"],
+                        "display": ["Geist", "Inter", "system-ui"],
+                        "body-md": ["Geist", "Inter", "system-ui"],
+                        "h2": ["Geist"],
+                        "label-pill": ["Geist Mono", "system-ui"],
+                        "display-mobile": ["Geist"]
+                    },
+                    "fontSize": {
+                        "h1": ["2.5rem", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "display": ["6rem", { "lineHeight": "1.0", "letterSpacing": "-0.04em", "fontWeight": "700" }],
+                        "body-md": ["0.93rem", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "h2": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-pill": ["0.75rem", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "display-mobile": ["48px", { "lineHeight": "48px", "letterSpacing": "-0.04em", "fontWeight": "700" }]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+
+<body class="bg-background text-on-background min-h-screen flex flex-row overflow-hidden">
+    <!-- Sidebar (Shared Component Anchor) -->
+    <aside class="hidden md:flex flex-col h-screen sticky top-0 bg-surface border-r border-border w-64">
+        <div class="px-md py-xl">
+            <h1 class="font-h2 text-h2 font-black text-primary mb-1">PROJECT_01</h1>
+            <p class="font-label-pill text-[10px] uppercase tracking-[0.2em] text-on-surface-variant font-bold">V2.4.0
+            </p>
+        </div>
+        <nav class="flex-grow px-sm">
+            <div class="flex flex-col gap-xs">
+                <!-- ACTIVE TAB: BRAINSTORM -->
+                <a class="bg-primary text-on-primary flex items-center gap-sm px-md py-sm transition-all duration-150 ease-linear group"
+                    href="#">
+                    <span class="material-symbols-outlined" data-icon="lightbulb">lightbulb</span>
+                    <span class="font-label-pill text-label-pill uppercase tracking-widest">BRAINSTORM</span>
+                </a>
+                <a class="text-secondary hover:text-primary hover:bg-surface-container flex items-center gap-sm px-md py-sm transition-all duration-150 ease-linear"
+                    href="#">
+                    <span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+                    <span class="font-label-pill text-label-pill uppercase tracking-widest">PRODUCT</span>
+                </a>
+                <a class="text-secondary hover:text-primary hover:bg-surface-container flex items-center gap-sm px-md py-sm transition-all duration-150 ease-linear"
+                    href="#">
+                    <span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+                    <span class="font-label-pill text-label-pill uppercase tracking-widest">RESOURCES</span>
+                </a>
+                <a class="text-secondary hover:text-primary hover:bg-surface-container flex items-center gap-sm px-md py-sm transition-all duration-150 ease-linear"
+                    href="#">
+                    <span class="material-symbols-outlined" data-icon="settings">settings</span>
+                    <span class="font-label-pill text-label-pill uppercase tracking-widest">SETTINGS</span>
+                </a>
+            </div>
+        </nav>
+        <div class="px-md py-xl border-t border-border mt-auto">
+            <button
+                class="w-full bg-primary text-on-primary py-md font-label-pill text-label-pill uppercase tracking-widest hover:bg-neutral-800 transition-colors">
+                NEW NODE
+            </button>
+            <div class="mt-md">
+                <a class="text-secondary hover:text-primary flex items-center gap-sm font-label-pill text-label-pill uppercase tracking-widest px-md"
+                    href="#">
+                    <span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+                    HELP
+                </a>
+            </div>
+        </div>
+    </aside>
+    <!-- Main Content Canvas -->
+    <main class="flex-1 flex flex-col h-screen overflow-y-auto">
+        <!-- Top Navigation (Shared Component Anchor) -->
+        <header class="flex justify-between items-center px-lg w-full h-xxl border-b border-border bg-background">
+            <div class="flex items-center gap-xl">
+                <span class="font-h2 text-h2 font-bold tracking-tighter text-primary">SYSTÈME</span>
+                <nav class="hidden md:flex gap-lg items-center"><a
+                        class="text-primary font-bold border-b-2 border-primary py-xs font-label-pill text-[12px] tracking-widest"
+                        href="#">STRATEGY</a><a
+                        class="text-on-surface-variant hover:text-primary transition-colors font-label-pill text-[12px] tracking-widest font-medium"
+                        href="#">TIMELINE</a><a
+                        class="text-on-surface-variant hover:text-primary transition-colors font-label-pill text-[12px] tracking-widest font-medium"
+                        href="#">ARCHIVE</a></nav>
+            </div>
+            <div class="flex items-center gap-md">
+                <!-- Language Picker as Pill Badge Button -->
+                <button
+                    class="border border-primary rounded-full px-md py-xs font-label-pill text-[10px] tracking-widest hover:bg-surface transition-colors flex items-center gap-xs uppercase self-center">
+                    <span class="material-symbols-outlined text-[14px]" data-icon="language">language</span>
+                    Bahasa Indonesia
+                </button>
+                <button
+                    class="font-label-pill text-label-pill uppercase tracking-widest text-secondary hover:text-primary">EN</button>
+                <button
+                    class="bg-primary text-on-primary px-lg py-sm font-label-pill text-label-pill uppercase tracking-widest hover:bg-neutral-800 transition-colors">EXPORT</button>
+            </div>
+        </header>
+        <!-- Brainstorm Hero Section -->
+        <section class="p-xxl flex flex-col md:flex-row gap-xxl border-b border-border">
+            <div class="flex-1">
+                <h2 class="font-display uppercase mb-md tracking-tighter text-h1">01 / BRAINSTORM</h2><button
+                    class="group flex items-center gap-sm text-primary font-body-md hover:translate-x-1 transition-transform mt-md"><span
+                        class="font-bold uppercase text-label-pill tracking-widest">Lihat draf PRD
+                        sebelumnya</span><span class="material-symbols-outlined text-[18px]"
+                        data-icon="north_east">north_east</span></button>
+            </div>
+            <div class="hidden md:block w-px bg-border h-auto"></div>
+            <div class="flex-1 flex flex-col justify-end pb-sm">
+                <p class="font-body-md text-secondary max-w-sm">
+                    Fase eksplorasi awal. Tuangkan ide tanpa batasan struktural. AI akan membantu mensintesis pemikiran
+                    Anda menjadi kerangka kerja teknis yang solid.
+                </p>
+            </div>
+        </section>
+        <!-- Central Workspace -->
+        <section class="flex-1 flex flex-col relative">
+            <div class="p-lg md:p-xxl flex-1 flex flex-col py-lg">
+
+                <textarea
+                    class="w-full resize-none font-h2 text-h2 leading-relaxed placeholder:text-surface-container-highest focus:ring-0 border-2 border-primary bg-background p-md flex-grow"
+                    placeholder="Tuliskan ide mentah aplikasi atau website yang ingin Anda bangun di sini..."
+                    spellcheck="false"></textarea>
+                <!-- Context Helpers -->
+
+            </div>
+            <!-- Primary Floating/Bottom-Right Action -->
+            <div
+                class="sticky bottom-0 left-0 w-full p-lg flex justify-end bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none">
+                <button
+                    class="pointer-events-auto bg-primary text-on-primary px-xxl py-lg flex items-center gap-md hover:bg-neutral-800 transition-all active:scale-[0.98]">
+                    <span class="font-label-pill text-[14px] font-bold tracking-[0.2em] uppercase">Mulai
+                        Perencanaan</span>
+                    <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+                </button>
+            </div>
+        </section>
+        <!-- Status Bar Footer -->
+        <footer class="h-md bg-surface border-t border-border flex items-center justify-between px-md">
+            <div class="flex items-center gap-md">
+                <span class="font-mono text-[9px] text-secondary tracking-widest uppercase">SYS_STABLE_READY</span>
+                <span class="font-mono text-[9px] text-secondary tracking-widest uppercase">LATENCY: 12ms</span>
+            </div>
+            <div class="flex items-center gap-sm">
+                <div class="w-2 h-2 border border-border"></div>
+                <div class="w-2 h-2 bg-primary"></div>
+                <div class="w-2 h-2 border border-border"></div>
+            </div>
+        </footer>
+    </main>
+    <!-- Mobile Bottom Nav -->
+    <div
+        class="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-background border-t border-border flex items-center justify-around z-50">
+        <button class="flex flex-col items-center gap-1 text-primary">
+            <span class="material-symbols-outlined" data-icon="lightbulb"
+                style="font-variation-settings: 'FILL' 1;">lightbulb</span>
+            <span class="text-[9px] font-bold">IDE</span>
+        </button>
+        <button class="flex flex-col items-center gap-1 text-secondary">
+            <span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+            <span class="text-[9px]">PROJECT</span>
+        </button>
+        <button class="flex flex-col items-center gap-1 text-secondary">
+            <span class="material-symbols-outlined" data-icon="settings">settings</span>
+            <span class="text-[9px]">SETTING</span>
+        </button>
+    </div>
+    <script>
+        // Simple micro-interaction for the textarea
+        const textarea = document.querySelector('textarea');
+        textarea.addEventListener('input', function () {
+            const wordCount = this.value.trim().split(/\s+/).filter(Boolean).length;
+            document.querySelector('span:nth-child(1)').parentElement.children[0].innerText = `Word count: ${wordCount}`;
+        });
+
+        // Atmosphere: Subtle keypress logger effect in background (Swiss visual noise)
+        document.addEventListener('keydown', (e) => {
+            // Optional: Add visual feedback for keypresses if needed for extra 'Swiss Tech' feel
+        });
+    </script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html class="light" lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>PRD-Planner MVP</title>
+    
+    <!-- CSS & Fonts -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-sans/style.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-mono/style.css" rel="stylesheet">
+    
+    <!-- Markdown & Mermaid CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Geist', 'Inter', system-ui, sans-serif;
+        }
+        .font-mono {
+            font-family: 'Geist Mono', monospace;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #E5E7EB;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #000000;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #000000 !important;
+            box-shadow: none !important;
+        }
+        
+        /* Markdown Styling */
+        .markdown-body {
+            color: #1b1b1b;
+            line-height: 1.7;
+        }
+        .markdown-body h1, .markdown-body h2, .markdown-body h3 {
+            font-weight: 700;
+            color: #000000;
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+            letter-spacing: -0.02em;
+        }
+        .markdown-body h1 { font-size: 1.8rem; border-b: 1px solid #E5E7EB; padding-bottom: 0.3em; }
+        .markdown-body h2 { font-size: 1.4rem; }
+        .markdown-body h3 { font-size: 1.1rem; }
+        .markdown-body p { margin-bottom: 1em; }
+        .markdown-body ul, .markdown-body ol { margin-bottom: 1em; padding-left: 1.5em; list-style-type: disc; }
+        .markdown-body li { margin-bottom: 0.25em; }
+        .markdown-body code {
+            font-family: 'Geist Mono', monospace;
+            background-color: #f3f3f3;
+            padding: 0.2em 0.4em;
+            font-size: 0.85em;
+            border-radius: 3px;
+        }
+        .markdown-body pre {
+            background-color: #f9f9f9;
+            padding: 1rem;
+            overflow-x: auto;
+            border: 1px solid #E5E7EB;
+            margin-bottom: 1rem;
+        }
+        .markdown-body table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+        }
+        .markdown-body th, .markdown-body td {
+            border: 1px solid #E5E7EB;
+            padding: 0.5rem 0.75rem;
+            text-align: left;
+        }
+        .markdown-body th {
+            background-color: #f3f3f3;
+        }
+        
+        /* Pulse Animation */
+        .pulse-dot {
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.3); }
+            70% { transform: scale(1); box-shadow: 0 0 0 4px rgba(0, 0, 0, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); }
+        }
+    </style>
+    <script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: "#E5E7EB",
+                        background: "#FFFFFF",
+                        surface: "#F9FAFB",
+                        "surface-container": "#eeeeee",
+                        primary: "#000000",
+                        "on-primary": "#ffffff",
+                        secondary: "#585f6c",
+                        "on-surface-variant": "#4c4546"
+                    },
+                    spacing: {
+                        xl: "48px",
+                        md: "16px",
+                        sm: "8px",
+                        xs: "4px",
+                        xxl: "80px",
+                        lg: "24px"
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-primary min-h-screen flex flex-row overflow-hidden">
+
+    <!-- Left Sidebar -->
+    <aside class="hidden md:flex flex-col h-screen sticky top-0 bg-surface border-r border-border w-64 select-none">
+        <div class="px-md py-xl">
+            <h1 class="text-2xl font-black tracking-tighter text-primary">PRD-PLANNER</h1>
+            <p class="font-mono text-[9px] uppercase tracking-[0.2em] text-secondary font-bold">V1.0.0 (MVP)</p>
+        </div>
+        
+        <!-- Navigation Steps Indicator -->
+        <nav class="flex-grow px-sm">
+            <div class="flex flex-col gap-xs" id="sidebar-nav">
+                <div data-step="1" class="flex items-center gap-sm px-md py-sm transition-all duration-150 font-mono text-[11px] tracking-widest text-secondary">
+                    <span class="material-symbols-outlined text-[18px]">lightbulb</span>
+                    <span>1 / BRAINSTORM</span>
+                </div>
+                <div data-step="2" class="flex items-center gap-sm px-md py-sm transition-all duration-150 font-mono text-[11px] tracking-widest text-secondary">
+                    <span class="material-symbols-outlined text-[18px]">question_answer</span>
+                    <span>2 / KUESIONER</span>
+                </div>
+                <div data-step="3" class="flex items-center gap-sm px-md py-sm transition-all duration-150 font-mono text-[11px] tracking-widest text-secondary">
+                    <span class="material-symbols-outlined text-[18px]">account_tree</span>
+                    <span>3 / STRUKTUR</span>
+                </div>
+                <div data-step="4" class="flex items-center gap-sm px-md py-sm transition-all duration-150 font-mono text-[11px] tracking-widest text-secondary">
+                    <span class="material-symbols-outlined text-[18px]">description</span>
+                    <span>4 / PRD FINAL</span>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="px-md py-xl border-t border-border mt-auto font-mono text-[9px] text-secondary flex flex-col gap-xs">
+            <div class="flex items-center gap-2">
+                <span id="status-pulse" class="w-2.5 h-2.5 bg-green-500 rounded-full border border-white pulse-dot"></span>
+                <span id="status-text">SYS_STABLE_READY</span>
+            </div>
+            <div id="latency-text">LATENCY: --ms</div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-screen overflow-hidden relative bg-white">
+        <!-- Conn Error Banner -->
+        <div id="conn-error-banner" class="hidden bg-red-600 text-white font-mono text-[10px] tracking-widest uppercase text-center py-2 z-50">
+            ⚠️ KONEKSI TERPUTUS. MENCOBA RE-KONEKSI SECEPATNYA...
+        </div>
+
+        <!-- Header -->
+        <header class="flex justify-between items-center px-lg w-full h-16 border-b border-border bg-background flex-shrink-0">
+            <div class="flex items-center gap-md">
+                <span class="text-lg font-bold tracking-tight text-primary">WORKSPACE</span>
+            </div>
+            <div class="flex items-center gap-md">
+                <!-- Language Picker -->
+                <div class="relative inline-block text-left">
+                    <button id="lang-picker" class="border border-primary rounded-full px-md py-1 font-mono text-[10px] tracking-widest hover:bg-surface transition-colors flex items-center gap-xs uppercase">
+                        <span class="material-symbols-outlined text-[14px]">language</span>
+                        <span id="current-lang-lbl">Bahasa Indonesia</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dynamic Screen Container -->
+        <div class="flex-1 overflow-y-auto flex flex-col" id="screen-container">
+            
+            <!-- LOADING SCREEN (GLOBAL) -->
+            <div id="screen-loading" class="hidden flex-1 flex flex-col items-center justify-center p-xl">
+                <div class="text-center max-w-md">
+                    <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mb-6"></div>
+                    <h3 class="text-xl font-bold mb-2 uppercase tracking-tight" id="loading-title">Menghubungkan ke Server...</h3>
+                    <p class="text-secondary font-body-md" id="loading-desc">Harap tunggu sementara kami menyiapkan lingkungan Anda.</p>
+                </div>
+            </div>
+
+            <!-- WAITING FOR AGENT SCREEN -->
+            <div id="screen-waiting-agent" class="hidden flex-1 flex flex-col items-center justify-center p-xl bg-neutral-50 border-t border-b border-border">
+                <div class="text-center max-w-xl p-lg border-2 border-dashed border-neutral-300 bg-white">
+                    <span class="material-symbols-outlined text-5xl text-neutral-400 mb-4 animate-bounce">smart_toy</span>
+                    <h3 class="text-lg font-bold uppercase tracking-widest mb-3 text-neutral-800">Menunggu AI Agent...</h3>
+                    <p class="text-secondary font-mono text-[12px] leading-relaxed mb-6">
+                        Data input Anda telah disimpan ke <code class="bg-neutral-100 px-1 py-0.5 text-red-600 font-bold">state.json</code>. Sekarang silakan jalankan skill AI <code class="bg-black text-white px-2 py-0.5 rounded font-bold">mikuplan</code> pada panel AI Assistant di IDE Anda untuk memproses ke tahap berikutnya.
+                    </p>
+                    <div class="inline-flex items-center gap-sm bg-neutral-100 border border-neutral-200 px-md py-sm text-[11px] font-mono text-secondary">
+                        <span class="w-2.5 h-2.5 bg-yellow-500 rounded-full animate-ping"></span>
+                        <span>Mendengarkan perubahan pada file state.json...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCREEN 1: BRAINSTORM -->
+            <div id="screen-brainstorm" class="hidden flex-1 flex flex-col">
+                <section class="p-lg md:p-xl flex flex-col md:flex-row gap-lg border-b border-border bg-surface">
+                    <div class="flex-1">
+                        <h2 class="font-mono text-2xl font-black uppercase mb-sm tracking-tighter">01 / BRAINSTORM</h2>
+                        <p class="font-body-md text-secondary max-w-md">
+                            Tuangkan ide mentah aplikasi atau website yang ingin Anda bangun. AI Agent akan mensintesis ide ini menjadi kuesioner pendalaman teknis.
+                        </p>
+                    </div>
+                </section>
+                <div class="p-lg md:p-xl flex-1 flex flex-col gap-md">
+                    <label class="font-mono text-xs uppercase tracking-widest text-secondary">Deskripsi Ide Proyek Anda:</label>
+                    <textarea id="brainstorm-input" class="w-full resize-none font-sans text-lg leading-relaxed placeholder:text-neutral-300 border-2 border-primary bg-background p-md flex-grow min-h-[250px]" placeholder="Contoh: Saya ingin membuat aplikasi booking lapangan padel untuk wilayah Jakarta. Harus ada fitur kalender interaktif untuk memilih slot waktu kosong, sistem pembayaran dengan bukti transfer, dan dashboard khusus admin untuk verifikasi pembayaran..."></textarea>
+                    <div class="flex justify-end mt-sm">
+                        <button id="btn-submit-brainstorm" class="bg-primary text-on-primary px-lg py-md flex items-center gap-md hover:bg-neutral-800 transition-all font-mono text-[12px] tracking-widest uppercase">
+                            <span>Mulai Perencanaan</span>
+                            <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCREEN 2: QUESTIONNAIRE -->
+            <div id="screen-questionnaire" class="hidden flex-1 flex flex-col">
+                <section class="p-lg md:p-xl border-b border-border bg-surface">
+                    <div class="flex justify-between items-center">
+                        <h2 class="font-mono text-2xl font-black uppercase tracking-tighter">02 / KUESIONER INTERAKTIF</h2>
+                        <span id="questionnaire-progress-lbl" class="font-mono text-xs text-secondary tracking-widest">PERTANYAAN 0 / 5</span>
+                    </div>
+                    <div class="w-full bg-neutral-200 h-1 mt-md">
+                        <div id="questionnaire-progress-bar" class="bg-black h-1 transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </section>
+                <div class="p-lg md:p-xl flex-1 flex flex-col gap-md">
+                    <div class="bg-neutral-50 border border-border p-md">
+                        <span class="font-mono text-[10px] text-secondary tracking-widest uppercase">PERTANYAAN AI:</span>
+                        <h3 id="question-text" class="text-xl font-bold mt-sm text-primary">Memuat pertanyaan...</h3>
+                    </div>
+
+                    <!-- Recommended Answer Chips -->
+                    <div id="chips-container" class="flex flex-wrap gap-xs py-sm">
+                        <!-- Chips will be inserted here dynamically -->
+                    </div>
+
+                    <label class="font-mono text-xs uppercase tracking-widest text-secondary">Jawaban Anda:</label>
+                    <textarea id="question-answer" class="w-full resize-none font-sans text-md leading-relaxed placeholder:text-neutral-300 border-2 border-primary bg-background p-md flex-grow min-h-[150px]" placeholder="Ketik tanggapan atau pilih salah satu rekomendasi jawaban di atas..."></textarea>
+                    
+                    <div class="flex justify-between items-center mt-sm">
+                        <button id="btn-skip-question" class="border border-neutral-300 text-secondary px-lg py-md hover:bg-neutral-50 transition-all font-mono text-[11px] tracking-widest uppercase">
+                            Lewati
+                        </button>
+                        <button id="btn-submit-question" class="bg-primary text-on-primary px-lg py-md flex items-center gap-md hover:bg-neutral-800 transition-all font-mono text-[11px] tracking-widest uppercase">
+                            <span>Kirim Jawaban</span>
+                            <span class="material-symbols-outlined text-[16px]">check</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCREEN 3: STRUCTURE/MINDMAP -->
+            <div id="screen-mindmap" class="hidden flex-1 flex flex-col">
+                <section class="p-lg md:p-xl border-b border-border bg-surface">
+                    <h2 class="font-mono text-2xl font-black uppercase tracking-tighter">03 / PETA STRUKTUR FITUR</h2>
+                    <p class="font-body-md text-secondary mt-xs">
+                        Struktur fitur dan arsitektur produk yang dirancang oleh AI. Silakan tinjau modul-modul ini sebelum beralih ke penyusunan dokumen PRD.
+                    </p>
+                </section>
+                <div class="p-lg md:p-xl flex-grow overflow-y-auto">
+                    <div class="border border-border p-md bg-neutral-50 min-h-[300px]">
+                        <h3 id="mindmap-title" class="font-bold text-lg border-b border-neutral-300 pb-sm mb-md uppercase tracking-tight">STRUKTUR FITUR MVP</h3>
+                        <div id="mindmap-tree" class="flex flex-col gap-sm">
+                            <!-- Mindmap nodes render here -->
+                        </div>
+                    </div>
+                </div>
+                <div class="p-lg border-t border-border bg-white flex justify-end">
+                    <button id="btn-approve-mindmap" class="bg-primary text-on-primary px-lg py-md flex items-center gap-md hover:bg-neutral-800 transition-all font-mono text-[11px] tracking-widest uppercase">
+                        <span>Lanjutkan ke Dokumen PRD</span>
+                        <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- SCREEN 4: PRD VIEWER -->
+            <div id="screen-prd" class="hidden flex-1 flex flex-col overflow-hidden">
+                <div class="flex-1 flex flex-row overflow-hidden">
+                    
+                    <!-- Left Pane: PRD Markdown Content -->
+                    <div class="flex-1 overflow-y-auto p-lg md:p-xl border-r border-border">
+                        <div class="flex justify-between items-center border-b border-border pb-md mb-md">
+                            <h2 class="font-mono text-2xl font-black uppercase tracking-tighter">📄 DOKUMEN PRD & ARSITEKTUR</h2>
+                            <div class="flex gap-sm">
+                                <span id="prd-lock-badge" class="hidden bg-green-100 text-green-800 border border-green-200 px-md py-xs font-mono text-[9px] uppercase tracking-widest font-bold items-center gap-xs">
+                                    <span class="material-symbols-outlined text-[12px]">lock</span> DIKUNCI
+                                </span>
+                            </div>
+                        </div>
+                        <div id="prd-content-rendered" class="markdown-body">
+                            <!-- PRD Markdown will render here -->
+                        </div>
+                    </div>
+
+                    <!-- Right Pane: Revisions Panel -->
+                    <div class="w-80 flex-shrink-0 bg-surface flex flex-col border-l border-border select-none" id="revisions-pane">
+                        <div class="p-md border-b border-border bg-white">
+                            <span class="font-mono text-[10px] text-secondary tracking-widest uppercase font-bold">🛠️ REVISI DOKUMEN</span>
+                            <p class="text-xs text-secondary mt-1">Berikan masukan atau koreksi jika ada komponen PRD yang ingin disesuaikan.</p>
+                        </div>
+                        
+                        <!-- Form Revisi -->
+                        <div class="p-md flex-1 flex flex-col gap-md">
+                            <textarea id="revision-feedback" class="w-full resize-none font-sans text-xs border border-neutral-300 bg-white p-sm flex-1 min-h-[150px]" placeholder="Contoh: Tolong ubah rekomendasi database dari SQLite ke PostgreSQL, dan tambahkan fitur ekspor CSV untuk laporan admin..."></textarea>
+                            
+                            <button id="btn-submit-revision" class="w-full bg-black text-white py-md font-mono text-[10px] tracking-widest uppercase hover:bg-neutral-800 transition-colors flex items-center justify-center gap-sm">
+                                <span class="material-symbols-outlined text-[14px]">send</span> Kirim Revisi
+                            </button>
+                        </div>
+
+                        <!-- Finalize Section -->
+                        <div class="p-md border-t border-border bg-white">
+                            <button id="btn-finalize-prd" class="w-full bg-green-600 text-white py-md font-mono text-[10px] tracking-widest uppercase hover:bg-green-700 transition-colors flex items-center justify-center gap-sm">
+                                <span class="material-symbols-outlined text-[14px]">lock_open</span> Kunci & Finalisasi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Client Script -->
+    <script>
+        let currentState = null;
+        let lastStateJsonString = '';
+        let pollingInterval = null;
+        let latencyStart = Date.now();
+
+        // DOM elements
+        const connErrorBanner = document.getElementById('conn-error-banner');
+        const statusPulse = document.getElementById('status-pulse');
+        const statusText = document.getElementById('status-text');
+        const latencyText = document.getElementById('latency-text');
+        const screenContainer = document.getElementById('screen-container');
+        
+        // Screens
+        const screenLoading = document.getElementById('screen-loading');
+        const screenWaitingAgent = document.getElementById('screen-waiting-agent');
+        const screenBrainstorm = document.getElementById('screen-brainstorm');
+        const screenQuestionnaire = document.getElementById('screen-questionnaire');
+        const screenMindmap = document.getElementById('screen-mindmap');
+        const screenPrd = document.getElementById('screen-prd');
+
+        // Initial setup for Mermaid
+        mermaid.initialize({ startOnLoad: false, theme: 'neutral' });
+
+        // Polling function
+        async function fetchState() {
+            latencyStart = Date.now();
+            try {
+                const response = await fetch('/api/state');
+                const duration = Date.now() - latencyStart;
+                latencyText.innerText = `LATENCY: ${duration}ms`;
+
+                if (!response.ok) {
+                    throw new Error('Gagal mengambil data dari server');
+                }
+
+                const stateData = await response.json();
+                
+                // Hide connection banner
+                connErrorBanner.classList.add('hidden');
+                statusPulse.className = 'w-2.5 h-2.5 bg-green-500 rounded-full border border-white pulse-dot';
+                statusText.innerText = 'SYS_STABLE_READY';
+
+                // Check if state string changed to avoid redrawing
+                const stateJsonString = JSON.stringify(stateData);
+                if (stateJsonString !== lastStateJsonString) {
+                    lastStateJsonString = stateJsonString;
+                    currentState = stateData;
+                    renderState(stateData);
+                }
+            } catch (err) {
+                console.error(err);
+                connErrorBanner.classList.remove('hidden');
+                statusPulse.className = 'w-2.5 h-2.5 bg-red-600 rounded-full border border-white';
+                statusText.innerText = 'SYS_OFFLINE';
+                latencyText.innerText = `LATENCY: ERR`;
+            }
+        }
+
+        // Render UI based on current state data
+        function renderState(data) {
+            // Hide all screen contents first
+            screenLoading.classList.add('hidden');
+            screenWaitingAgent.classList.add('hidden');
+            screenBrainstorm.classList.add('hidden');
+            screenQuestionnaire.classList.add('hidden');
+            screenMindmap.classList.add('hidden');
+            screenPrd.classList.add('hidden');
+
+            // Highlight Active Sidebar Step
+            document.querySelectorAll('#sidebar-nav [data-step]').forEach(el => {
+                const stepNum = parseInt(el.getAttribute('data-step'));
+                el.className = "flex items-center gap-sm px-md py-sm transition-all duration-150 font-mono text-[11px] tracking-widest text-secondary";
+                
+                if (data.state === stepNum) {
+                    el.classList.remove('text-secondary');
+                    el.classList.add('bg-primary', 'text-on-primary');
+                }
+            });
+
+            // Update language flag label
+            document.getElementById('current-lang-lbl').innerText = data.bahasa === 'en' ? 'English' : 'Bahasa Indonesia';
+
+            // Check if UI is waiting for the AI Agent
+            if (isWaitingForAgent(data)) {
+                screenWaitingAgent.classList.remove('hidden');
+                return;
+            }
+
+            // Switch Screen
+            if (data.state === 1) {
+                screenBrainstorm.classList.remove('hidden');
+                document.getElementById('brainstorm-input').value = data.ideAwal || '';
+            } 
+            else if (data.state === 2) {
+                screenQuestionnaire.classList.remove('hidden');
+                renderQuestionnaire(data);
+            } 
+            else if (data.state === 3) {
+                screenMindmap.classList.remove('hidden');
+                renderMindmap(data);
+            } 
+            else if (data.state === 4) {
+                screenPrd.classList.remove('hidden');
+                renderPrd(data);
+            }
+        }
+
+        // Helper to check if we are waiting for AI processing
+        function isWaitingForAgent(data) {
+            if (data.state === 1 && data.ideAwal.trim() !== '' && (!data.kuesioner || !data.kuesioner.pertanyaan || data.kuesioner.pertanyaan.length === 0)) {
+                return true;
+            }
+            if (data.state === 2 && data.kuesioner && data.kuesioner.completed === true && (!data.mindmap || !data.mindmap.nodes || data.mindmap.nodes.length === 0)) {
+                return true;
+            }
+            if (data.state === 3 && data.mindmap && data.mindmap.approved === true && (!data.prd || !data.prd.markdown || data.prd.markdown.trim() === '')) {
+                return true;
+            }
+            if (data.state === 4 && data.prd && data.prd.revisiFeedback && data.prd.revisiFeedback.trim() !== '') {
+                return true;
+            }
+            return false;
+        }
+
+        // Render Questionnaire Screen
+        function renderQuestionnaire(data) {
+            const index = data.kuesioner.currentIndex || 0;
+            const questions = data.kuesioner.pertanyaan || [];
+            const total = data.kuesioner.totalPertanyaan || questions.length || 5;
+
+            // Progress Update
+            document.getElementById('questionnaire-progress-lbl').innerText = `PERTANYAAN ${index + 1} / ${total}`;
+            const pct = ((index) / total) * 100;
+            document.getElementById('questionnaire-progress-bar').style.width = `${pct}%`;
+
+            const currentQ = questions[index];
+            const qTextEl = document.getElementById('question-text');
+            const chipsContainer = document.getElementById('chips-container');
+            chipsContainer.innerHTML = '';
+            document.getElementById('question-answer').value = '';
+
+            if (currentQ) {
+                if (typeof currentQ === 'object') {
+                    qTextEl.innerText = currentQ.text;
+                    if (currentQ.options && Array.isArray(currentQ.options)) {
+                        currentQ.options.forEach(opt => {
+                            const chip = document.createElement('button');
+                            chip.className = "border border-neutral-300 hover:border-black rounded-full px-md py-xs font-mono text-[10px] tracking-wider hover:bg-neutral-50 transition-colors uppercase";
+                            chip.innerText = opt;
+                            chip.onclick = () => {
+                                const textarea = document.getElementById('question-answer');
+                                if (textarea.value.trim() === '') {
+                                    textarea.value = opt;
+                                } else {
+                                    textarea.value += `, ${opt}`;
+                                }
+                            };
+                            chipsContainer.appendChild(chip);
+                        });
+                    }
+                } else {
+                    qTextEl.innerText = currentQ;
+                }
+            } else {
+                qTextEl.innerText = "Membuat pertanyaan...";
+            }
+        }
+
+        // Render Mindmap Screen
+        function renderMindmap(data) {
+            const titleEl = document.getElementById('mindmap-title');
+            const treeEl = document.getElementById('mindmap-tree');
+            treeEl.innerHTML = '';
+
+            const mindmap = data.mindmap || {};
+            titleEl.innerText = mindmap.title || 'STRUKTUR FITUR MVP';
+
+            if (mindmap.nodes && Array.isArray(mindmap.nodes)) {
+                mindmap.nodes.forEach(node => {
+                    const nodeEl = renderNode(node, 0);
+                    treeEl.appendChild(nodeEl);
+                });
+            } else {
+                treeEl.innerHTML = '<p class="text-xs font-mono text-secondary">Tidak ada data struktur fitur yang tersedia.</p>';
+            }
+        }
+
+        // Render Individual Node recursively
+        function renderNode(node, depth) {
+            const container = document.createElement('div');
+            container.className = `flex flex-col gap-1 ${depth > 0 ? 'ml-6 border-l border-neutral-300 pl-4 py-1' : 'border border-border p-sm bg-white'}`;
+
+            const header = document.createElement('div');
+            header.className = "flex items-center justify-between cursor-pointer group";
+
+            const left = document.createElement('div');
+            left.className = "flex items-center gap-xs";
+
+            if (node.children && node.children.length > 0) {
+                const icon = document.createElement('span');
+                icon.className = "material-symbols-outlined text-[16px] text-neutral-400 group-hover:text-black";
+                icon.innerText = node.expanded === false ? 'expand_more' : 'expand_less';
+                left.appendChild(icon);
+
+                header.onclick = (e) => {
+                    e.stopPropagation();
+                    node.expanded = node.expanded === false ? true : false;
+                    // Save local toggle to server state (optional) or just re-render
+                    renderMindmap(currentState);
+                };
+            } else {
+                const dot = document.createElement('span');
+                dot.className = "w-1.5 h-1.5 bg-neutral-400 ml-2 mr-2";
+                left.appendChild(dot);
+            }
+
+            const label = document.createElement('span');
+            label.className = "font-bold text-sm text-neutral-800";
+            label.innerText = node.label;
+            left.appendChild(label);
+
+            if (node.fase) {
+                const badge = document.createElement('span');
+                badge.className = "font-mono text-[9px] bg-neutral-100 text-neutral-600 border border-neutral-200 px-md rounded-full font-bold";
+                badge.innerText = node.fase;
+                left.appendChild(badge);
+            }
+
+            header.appendChild(left);
+
+            if (node.description) {
+                const desc = document.createElement('span');
+                desc.className = "text-xs text-secondary hidden md:inline ml-sm font-light";
+                desc.innerText = `— ${node.description}`;
+                left.appendChild(desc);
+            }
+
+            container.appendChild(header);
+
+            if (node.children && node.children.length > 0 && node.expanded !== false) {
+                const childrenContainer = document.createElement('div');
+                childrenContainer.className = "flex flex-col gap-xs";
+                node.children.forEach(child => {
+                    childrenContainer.appendChild(renderNode(child, depth + 1));
+                });
+                container.appendChild(childrenContainer);
+            }
+
+            return container;
+        }
+
+        // Render PRD Screen
+        async function renderPrd(data) {
+            const prdContentEl = document.getElementById('prd-content-rendered');
+            const prd = data.prd || {};
+
+            // Render Markdown
+            const mdText = prd.markdown || '# Dokumen PRD\n\nMenunggu konten digenerasikan...';
+            prdContentEl.innerHTML = marked.parse(mdText);
+
+            // Check finalization status
+            const prdLockBadge = document.getElementById('prd-lock-badge');
+            const revisionsPane = document.getElementById('revisions-pane');
+
+            if (prd.finalized) {
+                prdLockBadge.classList.remove('hidden');
+                prdLockBadge.classList.add('flex');
+                revisionsPane.classList.add('hidden'); // Hide revisions pane when locked
+            } else {
+                prdLockBadge.classList.add('hidden');
+                prdLockBadge.classList.remove('flex');
+                revisionsPane.classList.remove('hidden');
+            }
+
+            // Look for mermaid codeblocks inside rendered elements and render them
+            const mermaidBlocks = prdContentEl.querySelectorAll('pre code.language-mermaid');
+            if (mermaidBlocks.length > 0) {
+                for (let i = 0; i < mermaidBlocks.length; i++) {
+                    const codeEl = mermaidBlocks[i];
+                    const preEl = codeEl.parentElement;
+                    const id = `mermaid-chart-${i}`;
+                    const rawMermaid = codeEl.textContent;
+
+                    try {
+                        const { svg } = await mermaid.render(id, rawMermaid);
+                        const div = document.createElement('div');
+                        div.className = "mermaid-chart-rendered p-sm border border-neutral-200 my-md flex justify-center bg-white";
+                        div.innerHTML = svg;
+                        preEl.parentNode.replaceChild(div, preEl);
+                    } catch (err) {
+                        console.error('Mermaid render error:', err);
+                        // Biarkan tag code/pre asli jika gagal agar tetap terbaca sebagai teks
+                    }
+                }
+            }
+        }
+
+        // Post state update helper
+        async function updateState(updates) {
+            const updated = { ...currentState, ...updates };
+            
+            // Show global saving indicator
+            statusText.innerText = 'SYS_SAVING...';
+            statusPulse.className = 'w-2.5 h-2.5 bg-yellow-500 rounded-full border border-white pulse-dot';
+
+            try {
+                const response = await fetch('/api/state', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updated)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Gagal menyimpan state baru ke server.');
+                }
+                const result = await response.json();
+                currentState = result.state;
+                lastStateJsonString = JSON.stringify(result.state);
+                renderState(currentState);
+            } catch (err) {
+                console.error(err);
+                alert(`Gagal mengirim data ke server: ${err.message}`);
+                fetchState(); // Sync back
+            }
+        }
+
+        // Event Listeners
+        
+        // Screen 1: Submit Brainstorm
+        document.getElementById('btn-submit-brainstorm').onclick = async () => {
+            const val = document.getElementById('brainstorm-input').value.trim();
+            if (!val) {
+                alert('Tolong ketikkan ide proyek Anda terlebih dahulu.');
+                return;
+            }
+            await updateState({
+                ideAwal: val,
+                // Inisialisasi kuesioner kosong agar AI mikuplan tahu dia harus mulai memproses
+                kuesioner: {
+                    pertanyaan: [],
+                    jawaban: [],
+                    currentIndex: 0,
+                    totalPertanyaan: 5
+                }
+            });
+        };
+
+        // Screen 2: Submit Question
+        document.getElementById('btn-submit-question').onclick = async () => {
+            const answer = document.getElementById('question-answer').value.trim();
+            if (!answer) {
+                alert('Tolong ketikkan jawaban Anda atau pilih salah satu rekomendasi.');
+                return;
+            }
+            submitAnswer(answer);
+        };
+
+        // Screen 2: Skip Question
+        document.getElementById('btn-skip-question').onclick = async () => {
+            submitAnswer("Dilewati / skip oleh user");
+        };
+
+        function submitAnswer(ans) {
+            const q = currentState.kuesioner;
+            const updatedJawaban = [...(q.jawaban || [])];
+            updatedJawaban[q.currentIndex] = ans;
+
+            const nextIndex = q.currentIndex + 1;
+            const total = q.totalPertanyaan || q.pertanyaan.length || 5;
+
+            const updates = {
+                kuesioner: {
+                    ...q,
+                    jawaban: updatedJawaban,
+                    currentIndex: nextIndex
+                }
+            };
+
+            // Jika semua pertanyaan sudah dijawab, set completed = true
+            if (nextIndex >= total) {
+                updates.kuesioner.completed = true;
+            }
+
+            updateState(updates);
+        }
+
+        // Screen 3: Approve Mindmap
+        document.getElementById('btn-approve-mindmap').onclick = async () => {
+            await updateState({
+                mindmap: {
+                    ...currentState.mindmap,
+                    approved: true
+                },
+                prd: {
+                    markdown: "",
+                    finalized: false,
+                    revisiFeedback: ""
+                }
+            });
+        };
+
+        // Screen 4: Submit Revision
+        document.getElementById('btn-submit-revision').onclick = async () => {
+            const val = document.getElementById('revision-feedback').value.trim();
+            if (!val) {
+                alert('Tolong ketikkan koreksi atau revisi yang Anda inginkan.');
+                return;
+            }
+            await updateState({
+                prd: {
+                    ...currentState.prd,
+                    revisiFeedback: val
+                }
+            });
+            document.getElementById('revision-feedback').value = '';
+        };
+
+        // Screen 4: Finalize PRD
+        document.getElementById('btn-finalize-prd').onclick = async () => {
+            if (confirm('Apakah Anda yakin ingin mengunci dan memfinalisasi dokumen PRD ini? Tindakan ini akan mengunci state perencanaan.')) {
+                await updateState({
+                    prd: {
+                        ...currentState.prd,
+                        finalized: true
+                    }
+                });
+            }
+        };
+
+        // Language Picker Button Click
+        document.getElementById('lang-picker').onclick = async () => {
+            const nextLang = currentState.bahasa === 'en' ? 'id' : 'en';
+            await updateState({ bahasa: nextLang });
+        };
+
+        // Initial setup
+        screenLoading.classList.remove('hidden');
+        fetchState();
+        pollingInterval = setInterval(fetchState, 3000);
+    </script>
+</body>
+</html>

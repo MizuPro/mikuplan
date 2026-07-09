@@ -1,0 +1,13 @@
+# Node dependencies
+node_modules/
+
+# Local state database (used as a bridge between UI and AI Agent)
+state.json
+state.json.tmp
+state.json.lock
+state.json.backup-test
+state.json.corrupted-*
+
+# OS files
+.DS_Store
+Thumbs.db

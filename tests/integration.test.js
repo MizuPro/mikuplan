@@ -1,0 +1,164 @@
+const test = require('node:test');
+const assert = require('node:assert');
+const request = require('supertest');
+const fs = require('fs').promises;
+const path = require('path');
+const lockfile = require('proper-lockfile');
+const { app } = require('../server');
+const stateManager = require('../stateManager');
+
+const STATE_FILE = stateManager.STATE_FILE;
+const BACKUP_FILE = `${STATE_FILE}.backup-test`;
+
+// Helper untuk penundaan (delay)
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+test.before(async () => {
+  // Backup state.json yang asli jika ada
+  try {
+    await fs.access(STATE_FILE);
+    const content = await fs.readFile(STATE_FILE, 'utf8');
+    await fs.writeFile(BACKUP_FILE, content, 'utf8');
+  } catch (err) {
+    // Abaikan jika file tidak ada
+  }
+});
+
+test.after(async () => {
+  // Bersihkan lockfile dan hapus file test, kembalikan backup
+  try {
+    await lockfile.unlock(STATE_FILE).catch(() => {});
+  } catch (err) {}
+  
+  try {
+    await fs.unlink(STATE_FILE).catch(() => {});
+    await fs.unlink(`${STATE_FILE}.tmp`).catch(() => {});
+  } catch (err) {}
+
+  try {
+    await fs.access(BACKUP_FILE);
+    const content = await fs.readFile(BACKUP_FILE, 'utf8');
+    await fs.writeFile(STATE_FILE, content, 'utf8');
+    await fs.unlink(BACKUP_FILE);
+  } catch (err) {
+    // Abaikan jika backup tidak ada
+  }
+  
+  // Bersihkan berkas .corrupted hasil test jika ada
+  try {
+    const parentDir = path.dirname(STATE_FILE);
+    const dir = await fs.readdir(parentDir);
+    for (const file of dir) {
+      if (file.includes('state.json.corrupted-')) {
+        await fs.unlink(path.join(parentDir, file));
+      }
+    }
+  } catch (err) {}
+});
+
+test.describe('PRD-Planner Integration Tests', () => {
+  
+  test('GET /api/state - harus mengembalikan default state jika file tidak ada', async () => {
+    // Pastikan file dihapus terlebih dahulu
+    try {
+      await fs.unlink(STATE_FILE);
+    } catch (err) {}
+
+    const res = await request(app)
+      .get('/api/state')
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    assert.strictEqual(res.body.state, 1);
+    assert.strictEqual(res.body.ideAwal, "");
+    assert.deepStrictEqual(res.body.kuesioner.pertanyaan, []);
+  });
+
+  test('POST /api/state - harus menyimpan state baru ke file', async () => {
+    const newState = {
+      state: 2,
+      ideAwal: "Aplikasi Padel Booking MVP",
+      kuesioner: {
+        pertanyaan: ["Siapa target user?", "Fitur apa saja?"],
+        jawaban: ["Pemain padel lokal", "Booking slot, bayar via QR"],
+        currentIndex: 2
+      },
+      mindmap: null,
+      prd: null
+    };
+
+    const postRes = await request(app)
+      .post('/api/state')
+      .send(newState)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    assert.strictEqual(postRes.body.success, true);
+
+    // Verifikasi bahwa perubahan tersimpan secara fisik
+    const getRes = await request(app)
+      .get('/api/state')
+      .expect(200);
+
+    assert.strictEqual(getRes.body.state, 2);
+    assert.strictEqual(getRes.body.ideAwal, "Aplikasi Padel Booking MVP");
+    assert.strictEqual(getRes.body.kuesioner.currentIndex, 2);
+  });
+
+  test('POST /api/state - harus mengembalikan error 400 jika payload tidak valid', async () => {
+    await request(app)
+      .post('/api/state')
+      .send({})
+      .expect(400);
+  });
+
+  test('Auto-recovery - harus memulihkan state jika JSON corrupt', async () => {
+    // Tulis JSON rusak secara paksa ke file
+    await fs.writeFile(STATE_FILE, "{ corrupt_json: ", 'utf8');
+
+    const res = await request(app)
+      .get('/api/state')
+      .expect(200);
+
+    // Harus kembali ke default state
+    assert.strictEqual(res.body.state, 1);
+    
+    // Pastikan file corrupted dicadangkan
+    const parentDir = path.dirname(STATE_FILE);
+    const files = await fs.readdir(parentDir);
+    const corruptFileExists = files.some(f => f.startsWith('state.json.corrupted-'));
+    assert.strictEqual(corruptFileExists, true);
+  });
+
+  test('Locking & Retry Mechanism - harus menunggu lock dilepas lalu sukses melakukan penulisan', async () => {
+    // Inisialisasi awal
+    await fs.writeFile(STATE_FILE, JSON.stringify(stateManager.DEFAULT_STATE, null, 2), 'utf8');
+    
+    // Kunci file secara manual
+    const releaseLock = await lockfile.lock(STATE_FILE);
+
+    // Kirim request update state secara asinkronus (terhambat lock)
+    const updatePromise = request(app)
+      .post('/api/state')
+      .send({
+        state: 3,
+        ideAwal: "Testing Concurrency Lock"
+      });
+
+    // Tunggu sebentar untuk memastikan request berjalan dan tertahan
+    await delay(300);
+
+    // Lepaskan lock
+    await releaseLock();
+
+    // Tunggu request selesai
+    const res = await updatePromise;
+    assert.strictEqual(res.status, 200);
+    assert.strictEqual(res.body.success, true);
+
+    // Baca ulang dan pastikan data tersimpan
+    const checkRes = await request(app).get('/api/state');
+    assert.strictEqual(checkRes.body.ideAwal, "Testing Concurrency Lock");
+    assert.strictEqual(checkRes.body.state, 3);
+  });
+});
