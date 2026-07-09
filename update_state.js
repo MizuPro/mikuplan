@@ -1,16 +1,18 @@
 const fs = require('fs');
+const statePath = 'state.json';
+const prdPath = 'docs/PRD.md';
 
-const stateStr = fs.readFileSync('state.json', 'utf-8');
-const state = JSON.parse(stateStr);
-
-const prdStr = fs.readFileSync('docs/PRD.md', 'utf-8');
-
-state.prd = {
-  markdown: prdStr,
-  finalized: false,
-  revisiFeedback: ""
-};
-state.state = 4;
-
-fs.writeFileSync('state.json', JSON.stringify(state, null, 2));
-console.log("State updated to 4 with PRD markdown.");
+try {
+  const prdContent = fs.readFileSync(prdPath, 'utf8');
+  const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
+  
+  state.state = 4;
+  state.prd.markdown = prdContent;
+  state.prd.finalized = false;
+  state.prd.revisiFeedback = "";
+  
+  fs.writeFileSync(statePath, JSON.stringify(state, null, 2), 'utf8');
+  console.log('Successfully updated state.json after revision.');
+} catch (e) {
+  console.error('Error updating state:', e);
+}

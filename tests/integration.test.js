@@ -161,4 +161,52 @@ test.describe('PRD-Planner Integration Tests', () => {
     assert.strictEqual(checkRes.body.ideAwal, "Testing Concurrency Lock");
     assert.strictEqual(checkRes.body.state, 3);
   });
+
+  test('GET /api/tasks - harus memparsing docs/MAIN_PLAN.md dengan benar', async () => {
+    const docsDir = path.join(__dirname, '..', 'docs');
+    const mainPlanPath = path.join(docsDir, 'MAIN_PLAN.md');
+    
+    let planBackup = null;
+    try {
+      planBackup = await fs.readFile(mainPlanPath, 'utf8');
+    } catch (err) {}
+
+    try {
+      await fs.mkdir(docsDir, { recursive: true });
+
+      const testContent = `
+# Plan
+## Fase Test 1
+- [x] Task Selesai
+- [ ] Task Belum
+- [/] Task Jalan
+`;
+      await fs.writeFile(mainPlanPath, testContent, 'utf8');
+
+      const res = await request(app)
+        .get('/api/tasks')
+        .expect('Content-Type', /json/)
+        .expect(200);
+
+      assert.strictEqual(res.body.length, 1);
+      assert.strictEqual(res.body[0].title, "Fase Test 1");
+      assert.strictEqual(res.body[0].tasks.length, 3);
+      assert.strictEqual(res.body[0].tasks[0].text, "Task Selesai");
+      assert.strictEqual(res.body[0].tasks[0].completed, true);
+      assert.strictEqual(res.body[0].tasks[0].inProgress, false);
+      assert.strictEqual(res.body[0].tasks[1].text, "Task Belum");
+      assert.strictEqual(res.body[0].tasks[1].completed, false);
+      assert.strictEqual(res.body[0].tasks[1].inProgress, false);
+      assert.strictEqual(res.body[0].tasks[2].text, "Task Jalan");
+      assert.strictEqual(res.body[0].tasks[2].completed, false);
+      assert.strictEqual(res.body[0].tasks[2].inProgress, true);
+
+    } finally {
+      if (planBackup !== null) {
+        await fs.writeFile(mainPlanPath, planBackup, 'utf8');
+      } else {
+        await fs.unlink(mainPlanPath).catch(() => {});
+      }
+    }
+  });
 });
