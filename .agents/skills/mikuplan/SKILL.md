@@ -5,11 +5,16 @@ description: Sistem Perencanaan PRD (State Machine) untuk memproses ide, kuesion
 
 # mikuplan - Sistem Perencanaan PRD (State Machine)
 
+> [!IMPORTANT]
+> **PENTING: LOKASI WORKSPACE & PENEMPATAN BERKAS**
+> Seluruh berkas perencanaan (`state.json`, `docs/PRD.md`, `docs/MAIN_PLAN.md`) WAJIB dibaca, dibuat, dan ditulis di **root direktori workspace aktif host** tempat Anda beroperasi saat ini (misalnya jika workspace Anda adalah `my-cool-project`, maka berkas ditulis di `my-cool-project/state.json` dan `my-cool-project/docs/PRD.md`).
+> DILARANG KERAS menempatkan atau memproses berkas-berkas ini di dalam folder `node_modules/mikuplan` atau folder internal paket pustaka lainnya.
+
 Skill ini memandu AI Agent untuk mengelola proses perencanaan produk secara otomatis menggunakan file `state.json` sebagai jembatan komunikasi dengan antarmuka visual pengguna (Frontend).
 
 ## Alur Kerja State Machine
 
-Setiap kali dipanggil, Anda harus membaca file `state.json` di root direktori proyek, memeriksa nilai `state`, lalu menjalankan instruksi transisi berikut:
+Setiap kali dipanggil, Anda harus membaca file `state.json` di root direktori proyek aktif Anda (workspace root), memeriksa nilai `state`, lalu menjalankan instruksi transisi berikut:
 
 ---
 

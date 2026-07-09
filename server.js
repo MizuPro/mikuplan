@@ -1,7 +1,9 @@
+#!/usr/bin/env node
 const express = require('express');
 const stateManager = require('./stateManager');
 const path = require('path');
 const lockfile = require('proper-lockfile');
+const fs = require('fs').promises;
 
 const app = express();
 const PORT = process.env.PORT || 6767;
@@ -36,9 +38,35 @@ app.post('/api/state', async (req, res) => {
   }
 });
 
+// Fungsi untuk menginisialisasi folder AI skills (.agents) di workspace aktif pengguna
+async function initWorkspaceSkills() {
+  const targetDir = path.join(process.cwd(), '.agents');
+  const sourceDir = path.join(__dirname, '.agents');
+
+  try {
+    // Cek apakah target .agents/skills/mikuplan sudah terpasang
+    await fs.access(path.join(targetDir, 'skills', 'mikuplan'));
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      console.log('[mikuplan] Menginisialisasi AI skills (.agents) di project Anda...');
+      try {
+        await fs.cp(sourceDir, targetDir, { recursive: true });
+        console.log('[mikuplan] AI skills (.agents) berhasil diinstal. Reload/restart IDE Anda agar terdeteksi.');
+      } catch (copyErr) {
+        console.error('[mikuplan] Gagal menginisialisasi AI skills:', copyErr.message);
+      }
+    }
+  }
+}
+
 // Penanganan Graceful Shutdown
 let server;
 function startServer() {
+  // Jalankan inisialisasi AI skills di background
+  initWorkspaceSkills().catch(err => {
+    console.error('[mikuplan] Gagal inisialisasi workspace skills:', err.message);
+  });
+
   server = app.listen(PORT, () => {
     console.log(`Server berjalan di http://localhost:${PORT}`);
   });

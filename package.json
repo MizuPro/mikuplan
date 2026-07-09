@@ -1,19 +1,32 @@
 {
-  "name": "prd-planner",
-  "version": "1.0.0",
+  "name": "mikuplan",
+  "version": "1.0.1",
   "main": "index.js",
+  "description": "PRD Planning tool — run mikuplan from any project folder",
+  "bin": {
+    "mikuplan": "./server.js",
+    "mp": "./server.js"
+  },
+  "files": [
+    "server.js",
+    "stateManager.js",
+    "installSkills.js",
+    "public/",
+    "README.md",
+    ".agents/"
+  ],
   "directories": {
     "doc": "docs"
   },
   "scripts": {
     "mikuplan": "node server.js",
     "mp": "node server.js",
-    "test": "node --test"
+    "test": "node --test",
+    "postinstall": "node installSkills.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "express": "^5.2.1",
     "proper-lockfile": "^4.1.2"

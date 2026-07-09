@@ -2,8 +2,8 @@ const lockfile = require('proper-lockfile');
 const fs = require('fs').promises;
 const path = require('path');
 
-const STATE_FILE = path.join(__dirname, 'state.json');
-const TEMP_FILE = path.join(__dirname, 'state.json.tmp');
+const STATE_FILE = path.join(process.cwd(), 'state.json');
+const TEMP_FILE = path.join(process.cwd(), 'state.json.tmp');
 
 const DEFAULT_STATE = {
   state: 1,

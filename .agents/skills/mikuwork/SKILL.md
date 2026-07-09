@@ -5,6 +5,11 @@ description: Sistem Eksekusi Tugas AI untuk membaca Task List/MAIN_PLAN.md, menu
 
 # mikuwork - Sistem Eksekusi Tugas AI
 
+> [!IMPORTANT]
+> **PENTING: LOKASI WORKSPACE & PENEMPATAN BERKAS**
+> Seluruh pengerjaan kode, pembacaan berkas (`docs/MAIN_PLAN.md`), dan pengujian wajib dilakukan di **root direktori workspace aktif host** Anda (misalnya jika workspace Anda adalah `my-cool-project`, Anda harus membaca `my-cool-project/docs/MAIN_PLAN.md` dan menulis kode di dalam `my-cool-project/`).
+> DILARANG KERAS bekerja di dalam direktori `node_modules/mikuplan` atau folder internal paket pustaka lainnya.
+
 Skill ini memandu AI Agent untuk bertindak sebagai developer handal yang bertugas mengeksekusi daftar tugas teknis pada file `docs/MAIN_PLAN.md` secara teratur dan berurutan.
 
 ## Alur Kerja Eksekusi Tugas

@@ -14,24 +14,26 @@ PRD-Planner adalah platform perencanaan produk lokal, ultra-ringan, dan terisola
 
 ## 🛠️ Instalasi & Cara Menjalankan
 
-### 1. Prasyarat
-Pastikan Anda sudah menginstal **Node.js** (versi 18 ke atas direkomendasikan).
-
-### 2. Setup Awal
-Salin seluruh folder `PRD-Planner` ke dalam root folder proyek utama Anda. Masuk ke folder `PRD-Planner` dan jalankan:
+### 1. Instalasi Global
+Pasang `mikuplan` secara global ke sistem Anda menggunakan npm:
 ```bash
-npm install
+npm install -g mikuplan
 ```
 
-### 3. Menjalankan Server
-Jalankan server Node.js lokal dengan perintah:
+### 2. Jalankan di Project Anda
+Cukup buka terminal di direktori project aktif Anda (tempat Anda ingin membuat perencanaan), lalu jalankan:
 ```bash
-npm run mikuplan
-# Atau alias singkat:
-npm run mp
+mikuplan
 ```
-Buka peramban (browser) Anda dan akses:  
-👉 **[http://localhost:6767](http://localhost:6767)**
+*Atau gunakan alias singkat:*
+```bash
+mp
+```
+
+Perintah di atas akan:
+1. Menyalakan server lokal pada peramban (browser):  
+   👉 **[http://localhost:6767](http://localhost:6767)**
+2. Membuat berkas `state.json` secara otomatis di direktori aktif Anda (sangat aman, dan disarankan untuk dimasukkan ke `.gitignore` project Anda).
 
 ---
 
