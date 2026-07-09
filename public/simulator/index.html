@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic Jam Simulator 2D MVP</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div id="ui-overlay">
+        <div id="controls">
+            <button id="btn-play" class="btn">Play</button>
+            <button id="btn-pause" class="btn">Pause</button>
+            <span id="status-indicator">Paused</span>
+        </div>
+        <div id="dashboard">
+            <p>Active Vehicles: <span id="stat-vehicles">0</span></p>
+            <p>FPS: <span id="stat-fps">0</span></p>
+        </div>
+    </div>
+    
+    <div id="canvas-container">
+        <canvas id="simCanvas"></canvas>
+    </div>
+
+    <!-- Scripts dipanggil di akhir body -->
+    <script src="js/StateManager.js"></script>
+    <script src="js/Renderer.js"></script>
+    <script src="js/Engine.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+:root {
+    --bg-color: #222222;
+    --grid-color: #333333;
+    --text-color: #f0f0f0;
+    --accent-color: #ffcc00;
+    --btn-bg: #444444;
+    --btn-hover: #666666;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Courier New', Courier, monospace; /* Retro feel */
+    overflow: hidden; /* Prevent scrolling, canvas fills screen */
+}
+
+#canvas-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+canvas {
+    background-color: #1a1a1a;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    /* Image rendering pixelated for sharp pixel art look */
+    image-rendering: pixelated;
+}
+
+#ui-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none; /* Let clicks pass through to canvas if not on UI elements */
+}
+
+#controls, #dashboard {
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+    border: 2px solid var(--grid-color);
+    border-radius: 5px;
+    pointer-events: auto; /* Re-enable pointer events for UI */
+}
+
+.btn {
+    background-color: var(--btn-bg);
+    color: var(--text-color);
+    border: 1px solid var(--grid-color);
+    padding: 5px 15px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.btn:hover {
+    background-color: var(--btn-hover);
+}
+
+#status-indicator {
+    margin-left: 10px;
+    color: #ff5555; /* Default paused color */
+    font-weight: bold;
+}
+
+#status-indicator.running {
+    color: #55ff55;
+}
