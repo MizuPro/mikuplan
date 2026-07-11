@@ -1,6 +1,6 @@
 {
   "name": "mikuplan",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "index.js",
   "description": "PRD Planning tool — run mikuplan from any project folder",
   "bin": {
