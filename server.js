@@ -59,6 +59,47 @@ async function initWorkspaceSkills() {
   }
 }
 
+app.get('/api/tasks', async (req, res) => {
+  try {
+    const mainPlanPath = path.join(__dirname, 'docs', 'MAIN_PLAN.md');
+    let data;
+    try {
+      data = await fs.readFile(mainPlanPath, 'utf8');
+    } catch (readErr) {
+      if (readErr.code === 'ENOENT') {
+        return res.json([]);
+      }
+      throw readErr;
+    }
+
+    const lines = data.split('\n');
+    const phases = [];
+    let currentPhase = null;
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (trimmed.startsWith('## ')) {
+        currentPhase = {
+          title: trimmed.substring(3).trim(),
+          tasks: []
+        };
+        phases.push(currentPhase);
+      } else if (trimmed.startsWith('- [ ]') || trimmed.startsWith('- [x]') || trimmed.startsWith('- [/]')) {
+        if (currentPhase) {
+          const completed = trimmed.startsWith('- [x]');
+          const inProgress = trimmed.startsWith('- [/]');
+          const text = trimmed.substring(5).trim();
+          currentPhase.tasks.push({ text, completed, inProgress });
+        }
+      }
+    }
+    res.json(phases);
+  } catch (err) {
+    console.error('Error reading/parsing tasks:', err);
+    res.status(500).json({ error: 'Gagal membaca daftar tugas.' });
+  }
+});
+
 // Penanganan Graceful Shutdown
 let server;
 function startServer() {
