@@ -7,7 +7,7 @@ const fs = require('fs').promises;
 const pkg = require('./package.json');
 
 const app = express();
-const PORT = process.env.PORT || 6767;
+let PORT = process.env.PORT || 6767;
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -141,10 +141,45 @@ process.on('SIGINT', shutdown);
 // Jalankan server hanya jika dieksekusi secara langsung (bukan via require/import untuk test)
 if (require.main === module) {
   const args = process.argv.slice(2);
+
+  // 1. Tampilkan Help / Panduan Bantuan
+  if (args.includes('--help') || args.includes('-h')) {
+    console.log(`
+PRD-Planner (mikuplan) - Tool Perencanaan PRD MVP
+
+Penggunaan:
+  mikuplan [opsi]
+  mp [opsi]
+
+Opsi:
+  -v, --version       Tampilkan versi program saat ini
+  -h, --help          Tampilkan panduan bantuan ini
+  -p, --port <port>   Tentukan port server kustom (default: 6767)
+
+Contoh:
+  mikuplan -p 8080    Menjalankan server perencanaan di port 8080
+    `);
+    process.exit(0);
+  }
+
+  // 2. Tampilkan Version
   if (args.includes('--version') || args.includes('-v')) {
     console.log(`v${pkg.version}`);
     process.exit(0);
   }
+
+  // 3. Kustomisasi Port
+  const portIndex = args.findIndex(arg => arg === '--port' || arg === '-p');
+  if (portIndex !== -1 && args[portIndex + 1]) {
+    const parsedPort = parseInt(args[portIndex + 1], 10);
+    if (!isNaN(parsedPort) && parsedPort > 0 && parsedPort <= 65535) {
+      PORT = parsedPort;
+    } else {
+      console.error(`Error: Port '${args[portIndex + 1]}' tidak valid (harus angka 1 - 65535).`);
+      process.exit(1);
+    }
+  }
+
   startServer();
 }
 
