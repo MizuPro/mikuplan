@@ -4,6 +4,7 @@ const stateManager = require('./stateManager');
 const path = require('path');
 const lockfile = require('proper-lockfile');
 const fs = require('fs').promises;
+const pkg = require('./package.json');
 
 const app = express();
 const PORT = process.env.PORT || 6767;
@@ -139,6 +140,11 @@ process.on('SIGINT', shutdown);
 
 // Jalankan server hanya jika dieksekusi secara langsung (bukan via require/import untuk test)
 if (require.main === module) {
+  const args = process.argv.slice(2);
+  if (args.includes('--version') || args.includes('-v')) {
+    console.log(`v${pkg.version}`);
+    process.exit(0);
+  }
   startServer();
 }
 
