@@ -1,72 +1,75 @@
-# 📋 MAIN_PLAN: PRD-Planner MVP
+# 📋 MAIN_PLAN: KosNomad - Co-Living & Room Management System MVP
 
-Dokumen ini memuat daftar fase pengembangan (Task List) untuk membangun aplikasi PRD-Planner. Pengerjaan harus dilakukan secara berurutan dan mengikuti prinsip **Anti Happy-Path**, **No Fake Mocks**, serta **Context-First Wiring**.
+Dokumen ini memuat daftar fase pengembangan (Task List) untuk membangun aplikasi KosNomad. Pengerjaan harus dilakukan secara berurutan dan mengikuti prinsip **Anti Happy-Path**, **No Fake Mocks**, serta **Context-First Wiring**.
 
-Every komponen yang berinteraksi dengan I/O (seperti penulisan file `state.json`) wajib menangani skenario kegagalan seperti file terkunci (*locked*), *concurrent access*, atau JSON yang tidak valid.
-
----
-
-## 🚀 Fase 1: Setup Backend Ultra-Ringan (File I/O)
-Fokus: Membuat server Node.js kecil sebagai perantara baca/tulis `state.json` dengan pengamanan I/O yang solid.
-
-- [x] Inisialisasi proyek Node.js (`npm init -y`) dan instal framework ringan (misal: `express` atau cukup bawaan Node `http`).
-- [x] Buat file `server.js` yang menyajikan file statis dari folder `public/`.
-- [x] Buat API endpoint `GET /api/state` untuk membaca file `state.json`.
-  - *Edge Case Check:* Tangani jika file tidak ada (buat default file), jika file *corrupted* (JSON tidak valid), atau tidak ada izin baca.
-- [x] Buat API endpoint `POST /api/state` untuk menulis data ke `state.json`.
-  - *Edge Case Check:* Terapkan *file locking* (menggunakan library seperti `proper-lockfile` atau asinkron I/O aman) untuk menghindari *race condition* jika frontend dan agen AI mencoba menulis bersamaan. Terapkan mekanisme *retry* jika gagal menyimpan.
-- [x] Buat *Integration Test* sederhana untuk memvalidasi API `GET` dan `POST` dengan koneksi file riil (bukan mock).
+Setiap komponen yang berinteraksi dengan database atau I/O wajib menangani skenario kegagalan secara eksplisit dengan retry mechanism dan database transaction.
 
 ---
 
-## 🎨 Fase 2: Integrasi & Fungsionalitas Frontend
-Fokus: Menghidupkan desain UI yang sudah ada dan menyambungkannya dengan Backend I/O.
+## 🚀 Fase 1: Setup Proyek, Database & Modul Kamar/Properti
+Fokus: Setup base project (React + Node.js + PostgreSQL), migrasi database, dan modul properti/kamar.
 
-- [x] Pindahkan file `references/design/design.html` (beserta asetnya) ke direktori `public/index.html`.
-- [x] Modifikasi JavaScript di frontend untuk melakukan *fetch* awal ke `GET /api/state` saat halaman dimuat (untuk menentukan status *state* saat ini).
-- [x] Implementasikan mekanisme *Auto-Refresh* (Polling). Frontend melakukan *fetching* setiap 3-5 detik ke `GET /api/state` untuk mendeteksi perubahan yang dilakukan oleh agen AI.
-  - *Edge Case Check:* Tangani *Network Error* (jika server Node mati, tampilkan alert "Koneksi terputus, retrying...").
-- [x] Integrasikan tombol/teks area pengguna untuk mengirimkan data kembali ke `POST /api/state` (saat pengguna Submit ide/tahap).
-- [x] Pastikan *state* UI berganti (dari tahap 1, 2, dst) sesuai dengan nilai yang dikembalikan dari `state.json`.
-
----
-
-## 🤖 Fase 3: Pembuatan Sistem Skill AI (mikuplan)
-Fokus: Membuat otak logika agen AI (Skill mikuplan) untuk memandu proses PRD.
-
-- [x] Definisikan skema final dari file `state.json` (berisi fase saat ini, data ide awal, data hasil kuesioner, struktur mindmap, dsb).
-- [x] Buat folder skill `.agents/skills/mikuplan/`.
-- [x] Tulis instruksi komprehensif di `mikuplan/SKILL.md`. Logikanya harus beroperasi seperti *State Machine*:
-  - **Jika State = 1:** Baca input pengguna, generate 5 pertanyaan kuesioner, ubah state ke 2.
-  - **Jika State = 2:** Evaluasi jawaban kuesioner, buat arsitektur fitur (mindmap), ubah state ke 3.
-  - **Jika State = 3:** Konversi seluruh data menjadi dokumen PRD lengkap (`PRD.md`) dan *Task List*.
-- [x] Lakukan uji coba pemanggilan `mikuplan` dari agen AI untuk membaca dan mengedit `state.json` yang riil.
+- [ ] Inisialisasi Express backend dan React frontend (Vite) dalam satu monorepo lokal.
+- [ ] Konfigurasi koneksi database PostgreSQL menggunakan client pool (`pg`) lengkap dengan retry mechanism (exponential backoff) saat koneksi pertama kali didirikan.
+- [ ] Buat file migrasi database untuk skema tabel: `users`, `tenants`, `rooms`, `facilities`, `contracts`, `invoices`, dan `transactions` sesuai spesifikasi PRD.
+- [ ] Buat API Endpoint CRUD untuk Manajemen Kamar (`GET`, `POST`, `PUT`, `DELETE` `/api/rooms`).
+  - *Edge Case Check:* Tangani kegagalan jika nomor kamar duplikat, input data tidak valid, atau database terputus.
+- [ ] Buat API Endpoint untuk Manajemen Fasilitas Kamar (`GET`, `POST`, `DELETE` `/api/facilities`).
+- [ ] Buat halaman UI React untuk menampilkan katalog kamar, mengubah status kamar (`available`, `occupied`, `maintenance`), dan mengelola fasilitas.
+- [ ] Tulis *Integration Test* riil menggunakan PostgreSQL test database untuk memvalidasi fungsi CRUD kamar (Dilarang menggunakan fake mocks).
 
 ---
 
-## ⚙️ Fase 4: Pembuatan Sistem Skill AI Eksekusi (mikuwork)
-Fokus: Membuat otak logika eksekutor untuk membaca Task List dan menulis kode.
+## 👥 Fase 2: Autentikasi, Manajemen Penyewa & Kontrak Sewa
+Fokus: Mengamankan API dengan autentikasi berbasis role serta mengelola data penyewa profesional & kontrak aktif.
 
-- [x] Buat folder skill `.agents/skills/mikuwork/`.
-- [x] Tulis instruksi komprehensif di `mikuwork/SKILL.md`.
-- [x] Implementasikan logika agar skill ini mencari file *Task List* atau `MAIN_PLAN.md` yang digenerate oleh `mikuplan`.
-- [x] Instruksikan agen (lewat `SKILL.md`) untuk selalu mengambil task prioritas pertama yang belum dicentang `[ ]`, mengeksekusinya, melakukan validasi/testing, lalu mengubah statusnya menjadi `[x]`.
+- [ ] Implementasikan registrasi dan login menggunakan hashing password aman (bcrypt/argon2) dan autentikasi berbasis sesi/token JWT.
+- [ ] Batasi hak akses API: Hanya role `owner` yang bisa memodifikasi data kamar dan menyetujui invoice; role `tenant` hanya bisa melihat invoice miliknya dan mengunggah bukti bayar.
+- [ ] Buat API Endpoint CRUD untuk Manajemen Penyewa (`/api/tenants`).
+  - *Edge Case Check:* Validasi format URL untuk link portfolio penyewa dan nomor kontak darurat wajib diisi.
+- [ ] Buat API Endpoint untuk pembuatan Kontrak Sewa baru (`POST /api/contracts`).
+  - *Edge Case Check:* Pastikan kamar yang dipilih statusnya `available` sebelum diikat kontrak. Gunakan DB Transaction agar pembuatan kontrak dan pembaruan status kamar menjadi `occupied` berjalan secara atomik.
+- [ ] Buat halaman UI React untuk daftar penyewa, pembuatan kontrak baru, dan halaman login/register yang interaktif.
+
+---
+
+## 💸 Fase 3: Sistem Invoice & Konfirmasi Pembayaran
+Fokus: Generator tagihan otomatis, pengunggahan bukti bayar oleh penyewa, dan jurnal keuangan dasar.
+
+- [ ] Buat scheduler/cron job backend (atau skrip generator pemicu) untuk membuat data `invoices` baru secara otomatis bagi kontrak yang aktif setiap bulan.
+  - *Edge Case Check:* Tangani skenario jika invoice untuk bulan berjalan sudah pernah dibuat (mencegah double-billing).
+- [ ] Buat API Endpoint bagi penyewa untuk mengunggah bukti pembayaran (`POST /api/invoices/:id/pay`).
+  - *Edge Case Check:* Validasi tipe file upload (hanya gambar png/jpg) dan batasi ukuran maksimum (misal: 2MB).
+- [ ] Buat API Endpoint bagi pemilik untuk menyetujui pembayaran (`POST /api/invoices/:id/verify`).
+  - *Edge Case Check:* Gunakan database transaction. Saat disetujui, update status invoice menjadi `paid`, buat record baru di tabel `transactions` sebagai tipe `income` secara otomatis, dan pastikan kamar tetap ter-update statusnya.
+- [ ] Buat API Endpoint pencatatan transaksi pengeluaran operasional kost manual oleh pemilik (`POST /api/transactions`).
+- [ ] Buat halaman UI React: Portal tagihan bagi penyewa untuk upload bukti bayar, dan halaman verifikasi pembayaran bagi pemilik.
 
 ---
 
-## 📦 Fase 5: Finalisasi & Deployment Lokal
-Fokus: Memastikan *developer experience* (DX) sempurna saat dijalankan oleh pengguna baru.
+## 📊 Fase 4: Dashboard Laporan & Analitik
+Fokus: Menyajikan metrik finansial, tingkat hunian, dan pengeksporan laporan laba-rugi.
 
-- [x] Tulis instruksi lengkap di `README.md` tentang cara *clone*, `npm install`, `npm run mikuplan` / `npm run mp`, dan cara memanggil skill di AI assistant pengguna.
-- [x] Pastikan file `state.json` (data pengguna), `node_modules`, dan file sensitif lainnya berada di dalam `.gitignore`.
-- [x] Lakukan *End-to-End Test* secara keseluruhan dengan skenario *real*:
-  1. Jalankan `npm run mikuplan` atau `npm run mp`.
-  2. Isi frontend dengan ide.
-  3. Panggil `mikuplan`.
-  4. Lihat UI auto-refresh.
-  5. Selesaikan hingga PRD terbentuk.
-  6. Panggil `mikuwork` untuk mengeksekusi task.
+- [ ] Buat API Endpoint untuk agregasi data dasbor:
+  - Total pendapatan sewa dan pengeluaran operasional per bulan.
+  - Persentase tingkat keterisian kamar (occupancy rate).
+  - Rata-rata durasi tinggal penyewa.
+- [ ] Integrasikan pustaka grafik (seperti Chart.js atau Recharts) di frontend React untuk memvisualisasikan grafik arus kas bulanan.
+- [ ] Buat fitur ekspor data laporan arus kas bulanan ke berkas PDF atau CSV melalui API `/api/reports/export`.
+  - *Edge Case Check:* Tangani jika data transaksi kosong pada bulan yang dipilih dengan menampilkan empty state yang rapi di UI.
+- [ ] Buat tampilan UI Dashboard utama pemilik kost yang premium, bersih, dan informatif.
 
 ---
-**Model Recommendation:** 
-Plan ini lebih disarankan untuk dieksekusi menggunakan model **Gemini 3.1 Pro (High) / Advanced Model** karena melibatkan setup asinkronus (lockfile/I/O handling), pembuatan sistem instruksi agen AI (Skill) yang kompleks dan *context-heavy*, serta manipulasi *state machine*. Gemini 3 Flash mungkin kesulitan dalam merangkai instruksi AI untuk *state machine* tanpa mengalami halusinasi.
+
+## 🔒 Fase 5: Keamanan Ekstrem, Pengujian E2E & Validasi Edge-Cases
+Fokus: Menguji ketahanan aplikasi terhadap kegagalan koneksi, race conditions, dan input invalid.
+
+- [ ] Terapkan Rate Limiter pada endpoint sensitif (`/api/auth/login`, `/api/invoices/:id/pay`) untuk mencegah brute force dan spam upload.
+- [ ] Simulasikan kegagalan jaringan database di test suite untuk memvalidasi bahwa retry mechanism berjalan lancar dan data transaksi di-rollback sepenuhnya jika operasi gagal di tengah jalan.
+- [ ] Tulis End-to-End integration test dari alur: Registrasi Tenant -> Pembuatan Kontrak -> Generate Invoice -> Tenant Upload Bukti Bayar -> Owner Verifikasi -> Update Grafik Cash Flow.
+- [ ] Implementasikan Graceful Shutdown di backend Express untuk menutup koneksi database pool dan server HTTP secara bersih tanpa memutus request yang sedang berjalan.
+
+---
+
+**Model Recommendation:**
+Plan ini sangat direkomendasikan untuk dieksekusi menggunakan model **Gemini 3.5 Pro** atau model advanced setara. Hal ini dikarenakan pengerjaan melibatkan setup full-stack terintegrasi (React + Express + PostgreSQL), penulisan skema migrasi tabel relasional yang kompleks, penerapan Database Transaction atomik yang ketat untuk alur pembayaran, penanganan concurrency/locking, serta integrasi pustaka visualisasi grafik di frontend. Gemini 3.5 Flash bisa digunakan untuk tugas-tugas UI sederhana di frontend, tetapi logika backend transaksi dan pengujian integrasi memerlukan ketelitian tinggi dari model Pro.
