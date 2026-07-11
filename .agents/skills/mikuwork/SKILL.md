@@ -5,12 +5,7 @@ description: Sistem Eksekusi Tugas AI untuk membaca Task List/MAIN_PLAN.md, menu
 
 # mikuwork - Sistem Eksekusi Tugas AI
 
-> [!IMPORTANT]
-> **PENTING: LOKASI WORKSPACE & PENEMPATAN BERKAS**
-> Seluruh pengerjaan kode, pembacaan berkas (`docs/MAIN_PLAN.md`), dan pengujian wajib dilakukan di **root direktori workspace aktif host** Anda (misalnya jika workspace Anda adalah `my-cool-project`, Anda harus membaca `my-cool-project/docs/MAIN_PLAN.md` dan menulis kode di dalam `my-cool-project/`).
-> DILARANG KERAS bekerja di dalam direktori `node_modules/mikuplan` atau folder internal paket pustaka lainnya.
-
-Skill ini memandu AI Agent untuk bertindak sebagai developer handal yang bertugas mengeksekusi daftar tugas teknis pada file `docs/MAIN_PLAN.md` secara teratur dan berurutan.
+Skill ini memandu AI Agent untuk bertindak sebagai developer handal yang bertugas mengeksekusi daftar tugas teknis pada file `docs/MAIN_PLAN.md` secara teratur dan berurutan sesuai dengan opsi eksekusi yang diminta oleh pengguna.
 
 ## Alur Kerja Eksekusi Tugas
 
@@ -18,17 +13,29 @@ Setiap kali dipanggil, Anda harus mengikuti prosedur berikut secara disiplin:
 
 ---
 
-### 🔍 LANGKAH 1: Analisis Task List
+### 🔍 LANGKAH 1: Analisis Task List & Pemilihan Mode Eksekusi
 
 1. Buka dan baca file `docs/MAIN_PLAN.md` di proyek Anda.
-2. Identifikasi task pertama yang berstatus belum selesai (ditandai dengan `- [ ]`).
-3. Ini adalah **Task Prioritas Utama** Anda. Jangan melompat ke tugas lain sebelum tugas ini diselesaikan.
+2. Periksa instruksi/kata kunci yang dikirim oleh pengguna pada perintah pemanggilan untuk menentukan cakupan tugas yang akan dieksekusi:
+
+   * **KONDISI A: Tanpa Keyword Khusus (Mode Default)**
+     * Identifikasi **1 tugas teratas** yang berstatus belum selesai (ditandai dengan `- [ ]`).
+     * Ini adalah **Tugas Prioritas Utama** Anda. Jangan melompat ke tugas lain sebelum tugas ini diselesaikan.
+
+   * **KONDISI B: Keyword "per fase" (Mode Per Fase)**
+     * Cari fase aktif pertama yang masih memiliki tugas berstatus belum selesai (`- [ ]`) (misalnya, *Fase 1: Peta & Visualisasi Utama*).
+     * Ambil **seluruh tugas yang belum selesai** di dalam fase aktif tersebut. Anda akan mengeksekusi semuanya satu per satu secara berurutan dalam satu giliran pengerjaan.
+
+   * **KONDISI C: Keyword "sekaligus" (Mode Dinamis Sekaligus)**
+     * Lakukan analisis terhadap tugas-tugas berikutnya yang belum selesai di list.
+     * Kalkulasikan secara mandiri berapa banyak tugas berurutan yang aman untuk dikerjakan secara sekaligus (biasanya 2 hingga 4 tugas) dengan mempertimbangkan batasan kapasitas token, kompleksitas logika, dan kesalingtergantungan file.
+     * Laporkan jumlah tugas yang akan dikerjakan kepada pengguna, lalu jalankan semuanya dalam satu giliran.
 
 ---
 
 ### 💻 LANGKAH 2: Implementasi Kode (Production-Grade)
 
-Saat menulis kode untuk menyelesaikan task, Anda **wajib** mengikuti aturan ketat berikut:
+Saat menulis kode untuk menyelesaikan tugas (baik satu tugas maupun beberapa tugas sekaligus), Anda **wajib** mengikuti aturan ketat berikut:
 
 1. **Anti Happy-Path (Graceful Error Handling):**
    - Setiap operasi yang melibatkan I/O, database, API calls, atau concurrency wajib menangani skenario kegagalan secara eksplisit.
@@ -54,10 +61,11 @@ Sebelum menandai tugas selesai:
 
 ### 📝 LANGKAH 4: Update Progress & Output
 
-1. Jika tugas telah selesai diimplementasikan dan divalidasi dengan sukses, buka kembali file `docs/MAIN_PLAN.md`.
-2. Ubah tanda centang tugas tersebut dari `- [ ]` menjadi `- [x]`.
+1. Jika tugas-tugas telah selesai diimplementasikan dan divalidasi dengan sukses, buka kembali file `docs/MAIN_PLAN.md`.
+2. Ubah tanda centang tugas-tugas yang berhasil diselesaikan tersebut dari `- [ ]` menjadi `- [x]`.
 3. Tulis laporan singkat kepada pengguna:
-   - **Tugas yang Selesai:** [Nama/Detail Task]
-   - **File yang Diubah/Dibuat:** [Daftar file]
+   - **Mode Eksekusi Yang Digunakan:** [Default / Per Fase / Sekaligus (Kalkulasi AI)]
+   - **Tugas-tugas yang Selesai:** [Daftar nama/detail task yang diselesaikan]
+   - **File yang Diubah/Dibuat:** [Daftar file yang terdampak]
    - **Metode Validasi:** [Hasil test run atau bukti verifikasi]
    - **Tugas Berikutnya:** [Detail task berikutnya yang belum dicentang]
