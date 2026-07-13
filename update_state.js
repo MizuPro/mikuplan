@@ -6,7 +6,8 @@ try {
   const prdContent = fs.readFileSync(prdPath, 'utf8');
   const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
   
-  state.state = 4;
+  state.workflowVersion = 2;
+  state.state = 5;
   state.prd.markdown = prdContent;
   state.prd.finalized = false;
   state.prd.revisiFeedback = "";

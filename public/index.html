@@ -228,16 +228,20 @@
                     <span>2 / KUESIONER</span>
                 </div>
                 <div data-step="3" class="flex items-center gap-sm px-md py-sm transition-all duration-150 font-mono text-[11px] tracking-widest text-secondary">
-                    <span class="material-symbols-outlined text-[18px]">account_tree</span>
-                    <span>3 / STRUKTUR</span>
+                    <span class="material-symbols-outlined text-[18px]">palette</span>
+                    <span>3 / REFERENSI DESIGN</span>
                 </div>
                 <div data-step="4" class="flex items-center gap-sm px-md py-sm transition-all duration-150 font-mono text-[11px] tracking-widest text-secondary">
-                    <span class="material-symbols-outlined text-[18px]">description</span>
-                    <span>4 / PRD FINAL</span>
+                    <span class="material-symbols-outlined text-[18px]">account_tree</span>
+                    <span>4 / STRUKTUR</span>
                 </div>
                 <div data-step="5" class="flex items-center gap-sm px-md py-sm transition-all duration-150 font-mono text-[11px] tracking-widest text-secondary">
+                    <span class="material-symbols-outlined text-[18px]">description</span>
+                    <span>5 / PRD FINAL</span>
+                </div>
+                <div data-step="6" class="flex items-center gap-sm px-md py-sm transition-all duration-150 font-mono text-[11px] tracking-widest text-secondary">
                     <span class="material-symbols-outlined text-[18px]">construction</span>
-                    <span>5 / EKSEKUSI</span>
+                    <span>6 / EKSEKUSI</span>
                 </div>
             </div>
         </nav>
@@ -360,10 +364,52 @@
                 </div>
             </div>
 
-            <!-- SCREEN 3: STRUCTURE/MINDMAP -->
+            <!-- SCREEN 3: OPTIONAL DESIGN REFERENCES -->
+            <div id="screen-design-reference" class="hidden flex-1 flex flex-col">
+                <section class="p-lg md:p-xl border-b border-border bg-surface">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-sm">
+                        <div>
+                            <h2 class="font-mono text-2xl font-black uppercase tracking-tighter">03 / REFERENSI DESIGN</h2>
+                            <p class="font-body-md text-secondary max-w-2xl mt-sm">
+                                Ceritakan arah visual yang Anda inginkan atau lampirkan referensi yang sudah ada. Tahap ini opsional; jika dilewati, AI Agent akan menentukan arah design dari konteks produk.
+                            </p>
+                        </div>
+                        <span class="self-start border border-neutral-300 bg-white px-md py-xs font-mono text-[10px] tracking-widest text-secondary uppercase">Opsional</span>
+                    </div>
+                </section>
+                <div class="p-lg md:p-xl flex-1 flex flex-col gap-lg max-w-4xl w-full mx-auto">
+                    <div class="flex flex-col gap-sm">
+                        <label class="font-mono text-xs uppercase tracking-widest text-secondary">Deskripsi arah design:</label>
+                        <textarea id="design-description" class="w-full resize-none font-sans text-md leading-relaxed placeholder:text-neutral-300 border-2 border-primary bg-background p-md min-h-[170px]" placeholder="Contoh: Tampilan editorial minimalis, dominan hitam-putih, banyak whitespace, card bersudut tajam, dan tipografi sans-serif yang tegas..."></textarea>
+                    </div>
+
+                    <div class="flex flex-col gap-sm">
+                        <label class="font-mono text-xs uppercase tracking-widest text-secondary">File referensi:</label>
+                        <label for="design-files" class="border-2 border-dashed border-neutral-300 bg-neutral-50 hover:border-black hover:bg-white transition-colors p-lg cursor-pointer flex flex-col items-center text-center gap-sm">
+                            <span class="material-symbols-outlined text-3xl text-neutral-500">upload_file</span>
+                            <span class="font-mono text-[11px] tracking-widest uppercase font-bold">Pilih gambar atau file design</span>
+                            <span class="text-xs text-secondary">Maksimal 5 file, 10 MB per file. Mendukung gambar, design.md, teks, HTML, JSON, SVG, dan PDF.</span>
+                        </label>
+                        <input id="design-files" class="hidden" type="file" multiple accept="image/*,.md,.markdown,.txt,.html,.htm,.json,.svg,.pdf">
+                        <div id="design-files-list" class="flex flex-col gap-xs"></div>
+                    </div>
+
+                    <div class="flex flex-col-reverse sm:flex-row sm:justify-between gap-sm mt-auto pt-md border-t border-border">
+                        <button id="btn-skip-design" class="border border-neutral-300 text-secondary px-lg py-md hover:bg-neutral-50 transition-all font-mono text-[11px] tracking-widest uppercase">
+                            Lewati, Biarkan AI Menentukan
+                        </button>
+                        <button id="btn-submit-design" class="bg-primary text-on-primary px-lg py-md flex items-center justify-center gap-md hover:bg-neutral-800 transition-all font-mono text-[11px] tracking-widest uppercase">
+                            <span>Simpan & Lanjutkan</span>
+                            <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCREEN 4: STRUCTURE/MINDMAP -->
             <div id="screen-mindmap" class="hidden flex-1 flex flex-col overflow-hidden">
                 <section class="py-2 px-md border-b border-border bg-surface flex-shrink-0">
-                    <h2 class="font-mono text-sm font-bold uppercase tracking-widest text-neutral-800">03 / PETA STRUKTUR FITUR</h2>
+                    <h2 class="font-mono text-sm font-bold uppercase tracking-widest text-neutral-800">04 / PETA STRUKTUR FITUR</h2>
                     <p class="text-[11px] text-neutral-500 mt-0.5">
                         Struktur fitur dan arsitektur produk yang dirancang oleh AI. Silakan tinjau modul-modul ini sebelum beralih ke penyusunan dokumen PRD.
                     </p>
@@ -409,7 +455,7 @@
                 </div>
             </div>
 
-            <!-- SCREEN 4: PRD VIEWER -->
+            <!-- SCREEN 5: PRD VIEWER -->
             <div id="screen-prd" class="hidden flex-1 flex flex-col overflow-hidden">
                 <div class="flex-1 flex flex-row overflow-hidden">
                     
@@ -454,7 +500,7 @@
                 </div>
             </div>
 
-            <!-- SCREEN 5: EXECUTION (IMPLEMENTATION) -->
+            <!-- SCREEN 6: EXECUTION (IMPLEMENTATION) -->
             <div id="screen-execution" class="hidden flex-1 flex flex-col overflow-hidden">
                 <section class="p-lg md:p-xl border-b border-border bg-surface flex-shrink-0">
                     <div class="flex justify-between items-center">
@@ -530,6 +576,7 @@
         const screenWaitingAgent = document.getElementById('screen-waiting-agent');
         const screenBrainstorm = document.getElementById('screen-brainstorm');
         const screenQuestionnaire = document.getElementById('screen-questionnaire');
+        const screenDesignReference = document.getElementById('screen-design-reference');
         const screenMindmap = document.getElementById('screen-mindmap');
         const screenPrd = document.getElementById('screen-prd');
         const screenExecution = document.getElementById('screen-execution');
@@ -642,12 +689,13 @@
             screenWaitingAgent.classList.add('hidden');
             screenBrainstorm.classList.add('hidden');
             screenQuestionnaire.classList.add('hidden');
+            screenDesignReference.classList.add('hidden');
             screenMindmap.classList.add('hidden');
             screenPrd.classList.add('hidden');
             screenExecution.classList.add('hidden');
 
-            // Clear execution polling if not in state 5 (or state 4 finalized)
-            if (data.state !== 5 && !(data.state === 4 && data.prd && data.prd.finalized)) {
+            // Clear execution polling if not in state 6 (or a finalized PRD fallback)
+            if (data.state !== 6 && !(data.state === 5 && data.prd && data.prd.finalized)) {
                 if (executionPollingInterval) {
                     clearInterval(executionPollingInterval);
                     executionPollingInterval = null;
@@ -660,8 +708,8 @@
                 el.className = "flex items-center gap-sm px-md py-sm transition-all duration-150 font-mono text-[11px] tracking-widest text-secondary";
                 
                 let activeStep = data.state;
-                if (data.state === 4 && data.prd && data.prd.finalized) {
-                    activeStep = 5;
+                if (data.state === 5 && data.prd && data.prd.finalized) {
+                    activeStep = 6;
                 }
                 
                 if (activeStep === stepNum) {
@@ -689,10 +737,14 @@
                 renderQuestionnaire(data);
             } 
             else if (data.state === 3) {
+                screenDesignReference.classList.remove('hidden');
+                renderDesignReference(data);
+            }
+            else if (data.state === 4) {
                 screenMindmap.classList.remove('hidden');
                 renderMindmap(data);
-            } 
-            else if (data.state === 4) {
+            }
+            else if (data.state === 5) {
                 if (data.prd && data.prd.finalized) {
                     renderExecution(data);
                 } else {
@@ -700,7 +752,7 @@
                     renderPrd(data);
                 }
             }
-            else if (data.state === 5) {
+            else if (data.state === 6) {
                 renderExecution(data);
             }
         }
@@ -710,16 +762,61 @@
             if (data.state === 1 && data.ideAwal.trim() !== '' && (!data.kuesioner || !data.kuesioner.pertanyaan || data.kuesioner.pertanyaan.length === 0)) {
                 return true;
             }
-            if (data.state === 2 && data.kuesioner && data.kuesioner.completed === true && (!data.mindmap || !data.mindmap.nodes || data.mindmap.nodes.length === 0)) {
+            if (data.state === 2 && data.kuesioner && data.kuesioner.completed === true) {
                 return true;
             }
-            if (data.state === 3 && data.mindmap && data.mindmap.approved === true && (!data.prd || !data.prd.markdown || data.prd.markdown.trim() === '')) {
+            if (data.state === 3 && data.referensiDesign && data.referensiDesign.completed === true && (!data.mindmap || !data.mindmap.nodes || data.mindmap.nodes.length === 0)) {
                 return true;
             }
-            if (data.state === 4 && data.prd && data.prd.revisiFeedback && data.prd.revisiFeedback.trim() !== '') {
+            if (data.state === 4 && data.mindmap && data.mindmap.approved === true && (!data.prd || !data.prd.markdown || data.prd.markdown.trim() === '')) {
+                return true;
+            }
+            if (data.state === 5 && data.prd && data.prd.revisiFeedback && data.prd.revisiFeedback.trim() !== '') {
                 return true;
             }
             return false;
+        }
+
+        function renderDesignReference(data) {
+            const reference = data.referensiDesign || {};
+            const descriptionEl = document.getElementById('design-description');
+            if (document.activeElement !== descriptionEl) {
+                descriptionEl.value = reference.deskripsi || '';
+            }
+            renderDesignFiles(reference.files || [], document.getElementById('design-files').files);
+        }
+
+        function escapeHtml(value) {
+            return String(value).replace(/[&<>'"]/g, char => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                "'": '&#39;',
+                '"': '&quot;'
+            })[char]);
+        }
+
+        function renderDesignFiles(savedFiles = [], pendingFiles = []) {
+            const list = document.getElementById('design-files-list');
+            list.innerHTML = '';
+            const entries = [
+                ...savedFiles.map(file => ({ name: file.name, size: file.size, saved: true })),
+                ...Array.from(pendingFiles).map(file => ({ name: file.name, size: file.size, saved: false }))
+            ];
+
+            entries.forEach(file => {
+                const item = document.createElement('div');
+                item.className = 'flex items-center justify-between gap-md border border-neutral-200 bg-white px-md py-sm';
+                const size = file.size ? `${Math.max(1, Math.round(file.size / 1024))} KB` : '';
+                item.innerHTML = `
+                    <span class="flex items-center gap-sm min-w-0">
+                        <span class="material-symbols-outlined text-[18px] text-secondary">${file.saved ? 'task' : 'draft'}</span>
+                        <span class="font-mono text-[10px] truncate">${escapeHtml(file.name || 'referensi')}</span>
+                    </span>
+                    <span class="font-mono text-[9px] text-secondary whitespace-nowrap">${size}${file.saved ? ' · TERSIMPAN' : ' · SIAP DIUNGGAH'}</span>
+                `;
+                list.appendChild(item);
+            });
         }
 
         // Render Questionnaire Screen
@@ -1185,7 +1282,83 @@
             updateState(updates);
         }
 
-        // Screen 3: Approve Mindmap
+        // Screen 3: Optional Design References
+        document.getElementById('design-files').onchange = event => {
+            const files = Array.from(event.target.files || []);
+            if (files.length > 5) {
+                alert('Maksimal 5 file referensi dalam satu tahap.');
+                event.target.value = '';
+                renderDesignReference(currentState);
+                return;
+            }
+            renderDesignFiles(currentState.referensiDesign?.files || [], files);
+        };
+
+        async function uploadDesignFiles(files) {
+            if (!files.length) return [];
+
+            const formData = new FormData();
+            files.forEach(file => formData.append('files', file));
+            const response = await fetch('/api/design-references', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json().catch(() => ({}));
+            if (!response.ok) {
+                throw new Error(result.error || 'Gagal mengunggah file referensi design.');
+            }
+            return result.files || [];
+        }
+
+        document.getElementById('btn-submit-design').onclick = async () => {
+            const description = document.getElementById('design-description').value.trim();
+            const fileInput = document.getElementById('design-files');
+            const pendingFiles = Array.from(fileInput.files || []);
+            const savedFiles = currentState.referensiDesign?.files || [];
+            if (!description && pendingFiles.length === 0 && savedFiles.length === 0) {
+                alert('Tambahkan deskripsi/file referensi, atau pilih tombol Lewati.');
+                return;
+            }
+
+            const button = document.getElementById('btn-submit-design');
+            button.disabled = true;
+            button.classList.add('opacity-50', 'cursor-wait');
+            try {
+                const uploadedFiles = await uploadDesignFiles(pendingFiles);
+                await updateState({
+                    referensiDesign: {
+                        ...(currentState.referensiDesign || {}),
+                        deskripsi: description,
+                        files: [...savedFiles, ...uploadedFiles],
+                        completed: true,
+                        skipped: false,
+                        inferred: false
+                    },
+                    mindmap: null
+                });
+                fileInput.value = '';
+            } catch (err) {
+                alert(err.message);
+            } finally {
+                button.disabled = false;
+                button.classList.remove('opacity-50', 'cursor-wait');
+            }
+        };
+
+        document.getElementById('btn-skip-design').onclick = async () => {
+            await updateState({
+                referensiDesign: {
+                    deskripsi: '',
+                    files: [],
+                    completed: true,
+                    skipped: true,
+                    inferred: true
+                },
+                mindmap: null
+            });
+        };
+
+        // Screen 4: Approve Mindmap
         document.getElementById('btn-approve-mindmap').onclick = async () => {
             await updateState({
                 mindmap: {
@@ -1200,7 +1373,7 @@
             });
         };
 
-        // Screen 4: Submit Revision
+        // Screen 5: Submit Revision
         document.getElementById('btn-submit-revision').onclick = async () => {
             const val = document.getElementById('revision-feedback').value.trim();
             if (!val) {
@@ -1216,7 +1389,7 @@
             document.getElementById('revision-feedback').value = '';
         };
 
-        // Screen 4: Finalize PRD
+        // Screen 5: Finalize PRD
         document.getElementById('btn-finalize-prd').onclick = async () => {
             const confirmed = await showConfirm({
                 title: 'Finalisasi Dokumen PRD',
@@ -1227,7 +1400,7 @@
             });
             if (confirmed) {
                 await updateState({
-                    state: 5,
+                    state: 6,
                     prd: {
                         ...currentState.prd,
                         finalized: true
@@ -1249,7 +1422,7 @@
 
         // Window resize event to redraw connections
         window.addEventListener('resize', () => {
-            if (currentState && currentState.state === 3) {
+            if (currentState && currentState.state === 4) {
                 drawMindmapConnections();
             }
         });

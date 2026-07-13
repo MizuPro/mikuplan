@@ -6,6 +6,7 @@ const STATE_FILE = path.join(process.cwd(), 'state.json');
 const TEMP_FILE = path.join(process.cwd(), 'state.json.tmp');
 
 const DEFAULT_STATE = {
+  workflowVersion: 2,
   state: 1,
   ideAwal: "",
   kuesioner: {
@@ -13,9 +14,50 @@ const DEFAULT_STATE = {
     jawaban: [],
     currentIndex: 0
   },
+  referensiDesign: {
+    deskripsi: "",
+    files: [],
+    completed: false,
+    skipped: false
+  },
   mindmap: null,
   prd: null
 };
+
+/**
+ * Menambahkan field workflow terbaru dan memigrasikan nomor state versi lama.
+ * Workflow v1: Struktur=3, PRD=4, Eksekusi=5.
+ * Workflow v2: Referensi Design=3, Struktur=4, PRD=5, Eksekusi=6.
+ */
+function normalizeState(rawState) {
+  const source = rawState && typeof rawState === 'object' ? rawState : {};
+  const isLegacyWorkflow = !Number.isInteger(source.workflowVersion) || source.workflowVersion < 2;
+  let currentStep = Number.isInteger(source.state) ? source.state : DEFAULT_STATE.state;
+
+  if (isLegacyWorkflow && currentStep >= 3) {
+    currentStep = Math.min(currentStep + 1, 6);
+  }
+
+  const migratedPastDesignStep = isLegacyWorkflow && currentStep >= 4;
+
+  return {
+    ...DEFAULT_STATE,
+    ...source,
+    workflowVersion: 2,
+    state: currentStep,
+    kuesioner: {
+      ...DEFAULT_STATE.kuesioner,
+      ...(source.kuesioner || {})
+    },
+    referensiDesign: {
+      ...DEFAULT_STATE.referensiDesign,
+      ...(source.referensiDesign || {}),
+      ...(migratedPastDesignStep && !source.referensiDesign
+        ? { completed: true, skipped: true, inferred: true }
+        : {})
+    }
+  };
+}
 
 // Helper untuk penundaan (delay)
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -83,11 +125,11 @@ async function readState() {
   const release = await acquireLock(STATE_FILE);
   try {
     const content = await fs.readFile(STATE_FILE, 'utf8');
-    return JSON.parse(content);
+    return normalizeState(JSON.parse(content));
   } catch (parseErr) {
     console.error(`[stateManager] Gagal parse JSON saat membaca: ${parseErr.message}`);
     // Jika parse gagal di sini, kembalikan default state daripada crash
-    return DEFAULT_STATE;
+    return normalizeState(DEFAULT_STATE);
   } finally {
     await release();
   }
@@ -100,7 +142,7 @@ async function writeState(newState) {
   await ensureFileExists();
   const release = await acquireLock(STATE_FILE);
   try {
-    const content = JSON.stringify(newState, null, 2);
+    const content = JSON.stringify(normalizeState(newState), null, 2);
     // Tulis ke file temporary terlebih dahulu
     await fs.writeFile(TEMP_FILE, content, 'utf8');
     // Rename secara atomik
@@ -122,5 +164,6 @@ module.exports = {
   readState,
   writeState,
   STATE_FILE,
-  DEFAULT_STATE
+  DEFAULT_STATE,
+  normalizeState
 };

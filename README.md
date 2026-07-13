@@ -48,10 +48,12 @@ Digunakan selama tahap perencanaan produk untuk memproses status di Frontend.
   Buka panel AI Assistant pada IDE Anda di root proyek ini, lalu berikan instruksi:  
   > *"Jalankan skill mikuplan"* atau *"eksekusi mikuplan"*
 * **Fungsi Logika:**
-  - **State 1 (Brainstorm):** Membaca ide awal Anda dan merancang 5 kuesioner pendalaman teknis.
-  - **State 2 (Kuesioner):** Mengevaluasi tanggapan kuesioner Anda untuk merancang struktur/mindmap fitur produk.
-  - **State 3 (Struktur):** Menyusun dokumen PRD lengkap (`docs/PRD.md`) dengan diagram Mermaid (Sequence & ER diagram) serta daftar tugas teknis (`docs/MAIN_PLAN.md`).
-  - **State 4 (PRD & Revisi):** Mengelola revisi jika Anda mengetik masukan koreksi pada kolom revisi di Frontend.
+  - **State 1 (Brainstorm):** Membaca ide awal dan merancang 5 kuesioner pendalaman produk tanpa meminta preferensi design secara eksplisit.
+  - **State 2 (Kuesioner):** Mengevaluasi jawaban kebutuhan produk lalu membuka tahap referensi design.
+  - **State 3 (Referensi Design, opsional):** Menerima deskripsi dan/atau file referensi. Jika dilewati, AI Agent menentukan arah design dari konteks yang tersedia.
+  - **State 4 (Struktur):** Merancang struktur/mindmap fitur produk beserta ringkasan arah design.
+  - **State 5 (PRD & Revisi):** Menyusun dan merevisi `docs/PRD.md` beserta daftar tugas teknis `docs/MAIN_PLAN.md`.
+  - **State 6 (Eksekusi):** Menampilkan progres implementasi dari Task List untuk dikerjakan melalui `mikuwork`.
 
 ---
 

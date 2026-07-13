@@ -4,6 +4,7 @@ const stateManager = require('./stateManager');
 const path = require('path');
 const lockfile = require('proper-lockfile');
 const fs = require('fs').promises;
+const { formidable } = require('formidable');
 const pkg = require('./package.json');
 
 const app = express();
@@ -39,6 +40,79 @@ app.post('/api/state', async (req, res) => {
   }
 });
 
+app.post('/api/design-references', async (req, res) => {
+  const designDir = path.join(process.cwd(), 'references', 'design');
+  const allowedExtensions = new Set([
+    '.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg',
+    '.md', '.markdown', '.txt', '.html', '.htm', '.json', '.pdf'
+  ]);
+  let rejectedFile = false;
+
+  try {
+    const currentState = await stateManager.readState();
+    if (currentState.state !== 3) {
+      return res.status(409).json({ error: 'Referensi design hanya dapat diunggah pada tahap 3.' });
+    }
+
+    await fs.mkdir(designDir, { recursive: true });
+
+    const form = formidable({
+      uploadDir: designDir,
+      keepExtensions: true,
+      maxFiles: 5,
+      maxFileSize: 10 * 1024 * 1024,
+      maxTotalFileSize: 30 * 1024 * 1024,
+      filename: (_name, _ext, part) => {
+        const originalName = part.originalFilename || 'referensi';
+        const extension = path.extname(originalName).toLowerCase();
+        const baseName = path.basename(originalName, extension)
+          .normalize('NFKD')
+          .replace(/[^a-zA-Z0-9_-]+/g, '-')
+          .replace(/^-+|-+$/g, '')
+          .slice(0, 60) || 'referensi';
+        return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${baseName}${extension}`;
+      },
+      filter: part => {
+        const extension = path.extname(part.originalFilename || '').toLowerCase();
+        const accepted = Boolean(part.mimetype?.startsWith('image/')) || allowedExtensions.has(extension);
+        rejectedFile ||= !accepted;
+        return accepted;
+      }
+    });
+
+    const [, uploadedFiles] = await form.parse(req);
+    const uploadedFileList = Object.values(uploadedFiles).flat().filter(Boolean);
+    if (rejectedFile) {
+      await Promise.all(uploadedFileList.map(file => fs.unlink(file.filepath).catch(() => {})));
+      return res.status(400).json({
+        error: 'Format file tidak didukung. Gunakan gambar, Markdown, teks, HTML, JSON, SVG, atau PDF.'
+      });
+    }
+
+    const files = uploadedFileList
+      .map(file => ({
+        name: file.originalFilename,
+        path: path.relative(process.cwd(), file.filepath).split(path.sep).join('/'),
+        size: file.size,
+        type: file.mimetype || 'application/octet-stream'
+      }));
+
+    if (files.length === 0) {
+      return res.status(400).json({ error: 'Tidak ada file referensi yang valid untuk disimpan.' });
+    }
+
+    res.json({ success: true, files });
+  } catch (err) {
+    console.error('Error uploading design references:', err);
+    const status = err.httpCode === 413 ? 413 : 500;
+    res.status(status).json({
+      error: status === 413
+        ? 'Ukuran file referensi melebihi batas yang diizinkan.'
+        : 'Gagal menyimpan file referensi design.'
+    });
+  }
+});
+
 // Fungsi untuk menginisialisasi folder AI skills (.agents) di workspace aktif pengguna
 async function initWorkspaceSkills() {
   const targetDir = path.join(process.cwd(), '.agents');
@@ -62,7 +136,7 @@ async function initWorkspaceSkills() {
 
 app.get('/api/tasks', async (req, res) => {
   try {
-    const mainPlanPath = path.join(__dirname, 'docs', 'MAIN_PLAN.md');
+    const mainPlanPath = path.join(process.cwd(), 'docs', 'MAIN_PLAN.md');
     let data;
     try {
       data = await fs.readFile(mainPlanPath, 'utf8');
